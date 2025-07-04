@@ -12,6 +12,7 @@ See ROADMAP.md for the technical roadmap and BUSINESS_ANALYSIS.md for business p
    psql -f db/migrations/002_add_stock_triggers.sql
    psql -f db/migrations/003_create_views.sql
    psql -f db/migrations/004_add_partners.sql
+   psql -f db/migrations/005_remove_stock_fk.sql
    psql -f db/seeds/001_suppliers.sql
    psql -f db/seeds/002_clients.sql
    psql -f db/seeds/003_raw_materials.sql
@@ -20,6 +21,7 @@ See ROADMAP.md for the technical roadmap and BUSINESS_ANALYSIS.md for business p
    psql -f db/seeds/006_bom.sql
    psql -f db/seeds/007_stock.sql
    ```
+   Seeds include additional products and a complete bill of materials.
 3. Alternatively, use the Poetry-based CLI:
    ```bash
    poetry install
