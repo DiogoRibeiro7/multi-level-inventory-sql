@@ -95,11 +95,13 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 
   * Versioned, idempotent scripts.
   * Include `DOWN` scripts if your tool supports them.
+  * `004_add_partners.sql` adds clients and suppliers (implemented).
 * **Seed data**
 
   * Realistic raw materials (e.g. steel, plastic).
   * Sample intermediaries (e.g. frame, casing).
   * Finished products (e.g. bicycle).
+  * Suppliers and clients linked to raw materials and finished products.
   * Poetry-based CLI to run migrations and seeds
 
 ---

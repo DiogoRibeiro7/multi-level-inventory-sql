@@ -11,11 +11,14 @@ See ROADMAP.md for the technical roadmap and BUSINESS_ANALYSIS.md for business p
    psql -f db/migrations/001_create_schema.sql
    psql -f db/migrations/002_add_stock_triggers.sql
    psql -f db/migrations/003_create_views.sql
-   psql -f db/seeds/seed_raw_materials.sql
-   psql -f db/seeds/seed_intermediaries.sql
-   psql -f db/seeds/seed_products.sql
-   psql -f db/seeds/seed_bom.sql
-   psql -f db/seeds/seed_stock.sql
+   psql -f db/migrations/004_add_partners.sql
+   psql -f db/seeds/001_suppliers.sql
+   psql -f db/seeds/002_clients.sql
+   psql -f db/seeds/003_raw_materials.sql
+   psql -f db/seeds/004_intermediaries.sql
+   psql -f db/seeds/005_finished_products.sql
+   psql -f db/seeds/006_bom.sql
+   psql -f db/seeds/007_stock.sql
    ```
 3. Alternatively, use the Poetry-based CLI:
    ```bash
