@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "inventory"
+version = "0.1.0"
+description = "Utilities for managing the multi-level inventory SQL project"
+authors = ["Diogo Ribeiro <dfr@esmad.ipp.pt>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.dev-dependencies]
+pytest = "^8.0"
+
+[tool.poetry.scripts]
+inventory-cli = "inventory.cli:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
