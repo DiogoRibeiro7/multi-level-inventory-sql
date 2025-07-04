@@ -159,15 +159,16 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 
 ## 8. Continuous Integration & Quality
 
-* **GitHub Actions workflow**
+* **GitHub Actions workflow** (implemented)
 
   * On PR:
 
     1. Start Postgres service.
     2. Run migrations & seed data.
-    3. Execute tests.
-* **Badges in README**: build status, test coverage.
-* **Linting**: SQLFluff or similar for style checks.
+    3. Lint SQL files.
+    4. Execute tests.
+* **Badges in README**: build status (added), test coverage (TBD).
+* **Linting**: SQLFluff checks run in CI.
 
 ---
 

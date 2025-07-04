@@ -10,6 +10,7 @@ python = "^3.11"
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.0"
+sqlfluff = "^2.3"
 
 [tool.poetry.scripts]
 inventory-cli = "inventory.cli:main"

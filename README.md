@@ -1,4 +1,5 @@
 # multi-level-inventory-sql
+[![CI](https://github.com/DiogoRibeiro7/multi-level-inventory-sql/actions/workflows/ci.yml/badge.svg)](https://github.com/DiogoRibeiro7/multi-level-inventory-sql/actions/workflows/ci.yml)
 Tracks inventory across raw materials, intermediary products, and finished goods.
 
 See ROADMAP.md for the technical roadmap and BUSINESS_ANALYSIS.md for business planning considerations.
@@ -28,3 +29,9 @@ current inventory levels:
 ```sql
 SELECT * FROM stock_on_hand;
 ```
+
+## Continuous Integration
+
+This project uses a GitHub Actions workflow to ensure migrations, seeds,
+linting, and tests run on every pull request. The workflow spins up PostgreSQL,
+runs the CLI against it, and executes the test suite.
