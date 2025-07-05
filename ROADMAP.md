@@ -95,11 +95,11 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 
   * Versioned, idempotent scripts.
   * Include `DOWN` scripts if your tool supports them.
-  * `004_add_partners.sql` adds clients and suppliers (implemented).
+  * `004_add_partners.sql` adds clients and suppliers ✅
   * `005_remove_stock_fk.sql` drops a foreign key so stock transactions can
-    reference all product types (implemented).
+    reference all product types ✅
   * `006_add_reorder_thresholds.sql` adds min stock columns and the
-    `reorder_alerts` view (implemented).
+    `reorder_alerts` view ✅
 * **Seed data**
 
   * Realistic raw materials (e.g. steel, plastic).
@@ -107,7 +107,7 @@ Deliver a robust SQL-based inventory management system demonstrating database de
   * Finished products (e.g. bicycle).
   * Suppliers and clients linked to raw materials and finished products.
   * Expanded dataset includes multiple bicycles and components.
-  * Poetry-based CLI to run migrations and seeds
+  * Poetry-based CLI to run migrations and seeds ✅
 
 ---
 
@@ -115,14 +115,14 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 
 * **Stored procedures**
 
-  * `create_production_run(product_id, quantity)`
+  * `create_production_run(product_id, quantity)` ✅
 
     * Explode BOM, deduct raw and intermediary stock.
     * Insert `stock_transaction` rows.
 * **Triggers**
 
-  * BEFORE INSERT on `stock_transactions`: prevent negative stock.
-  * AFTER INSERT: update a material’s `current_stock` in its table.
+  * BEFORE INSERT on `stock_transactions`: prevent negative stock ✅
+  * AFTER INSERT: update a material's `current_stock` in its table ✅
 
 ---
 
@@ -143,10 +143,10 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 * **Stock-on-hand**
 
   * Aggregate `stock_transactions` by product and date.
-  * View `stock_on_hand` consolidates current stock across all item types.
+  * View `stock_on_hand` consolidates current stock across all item types ✅
 * **Reorder alerts**
 
-  * View showing items below minimum threshold (implemented as `reorder_alerts`).
+  * View showing items below minimum threshold ✅ (`reorder_alerts` view)
 
 ---
 
@@ -166,7 +166,7 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 
 ## 8. Continuous Integration & Quality
 
-* **GitHub Actions workflow** (implemented)
+* **GitHub Actions workflow** ✅
 
   * On PR:
 
