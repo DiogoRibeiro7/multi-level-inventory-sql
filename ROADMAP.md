@@ -51,7 +51,7 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 
 ## 3. Conceptual & Logical Design
 
-* **ER diagram**
+* **ER diagram** ✅
 
   * Sketch entities and relationships:
 
@@ -188,7 +188,7 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 * **Schema docs**
 
   * Table definitions, column descriptions, constraints.
-* **Embed ER diagram**
+* **Embed ER diagram** ✅
 
   * Add PNG or link to draw\.io.
 * **Usage examples**
@@ -201,8 +201,8 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 ## 10. Versioning, Releases & Maintenance
 
 * **Semantic tags**: `v0.1.0` schema only, `v0.2.0` + transactions, etc.
-* **CHANGELOG.md**: record new features, fixes, breaking changes.
-* **Backup & restore scripts**: `pg_dump` and `psql` commands.
+* **CHANGELOG.md**: record new features, fixes, breaking changes. ✅
+* **Backup & restore scripts**: `pg_dump` and `psql` commands. ✅
 * **Future growth**
 
   * Support multiple warehouses.

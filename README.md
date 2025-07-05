@@ -55,3 +55,14 @@ SELECT * FROM bom_explosion(1); -- components for product with ID 1
 This project uses a GitHub Actions workflow to ensure migrations, seeds,
 linting, and tests run on every pull request. The workflow spins up PostgreSQL,
 runs the CLI against it, and executes the test suite.
+
+## Backup and Restore
+Use the helper scripts in `scripts/` to back up the database and restore it later:
+```bash
+./scripts/backup.sh postgres://user:pass@localhost/dbname /path/to/backup.sql
+./scripts/restore.sh postgres://user:pass@localhost/dbname /path/to/backup.sql
+```
+
+## Documentation
+The [docs/ERD.md](docs/ERD.md) file contains an entity relationship diagram.
+See [CHANGELOG.md](CHANGELOG.md) for release notes.
