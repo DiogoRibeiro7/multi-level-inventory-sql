@@ -6,6 +6,16 @@ This document outlines the combined technical and business-analysis roadmap for 
 
 Deliver a robust SQL-based inventory management system demonstrating database design, migrations, testing, CI/CD, and business value realization.
 
+## Progress
+
+The following milestones are complete:
+
+* Core schema migrations and seed data
+* Trigger functions and `create_production_run` procedure
+* Reporting views (`stock_on_hand`, `reorder_alerts`)
+* `bom_explosion` function for component breakdowns
+* Poetry-based CLI and GitHub Actions workflow
+
 ---
 
 ## 1. Project Kick-off & Planning
@@ -19,7 +29,7 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 
   * Tables: `raw_materials`, `intermediaries`, `finished_products`, `bom`, `stock_transactions`.
   * CRUD for each tier.
-  * BOM explosion queries ✅
+  * BOM explosion queries
   * Stock-on-hand reports per tier and per location.
 * **Identify extras**
 
@@ -51,7 +61,7 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 
 ## 3. Conceptual & Logical Design
 
-* **ER diagram** ✅
+* **ER diagram**
 
   * Sketch entities and relationships:
 
@@ -95,11 +105,11 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 
   * Versioned, idempotent scripts.
   * Include `DOWN` scripts if your tool supports them.
-  * `004_add_partners.sql` adds clients and suppliers ✅
+  * `004_add_partners.sql` adds clients and suppliers
   * `005_remove_stock_fk.sql` drops a foreign key so stock transactions can
-    reference all product types ✅
+    reference all product types
   * `006_add_reorder_thresholds.sql` adds min stock columns and the
-    `reorder_alerts` view ✅
+    `reorder_alerts` view
 * **Seed data**
 
   * Realistic raw materials (e.g. steel, plastic).
@@ -107,7 +117,7 @@ Deliver a robust SQL-based inventory management system demonstrating database de
   * Finished products (e.g. bicycle).
   * Suppliers and clients linked to raw materials and finished products.
   * Expanded dataset includes multiple bicycles and components.
-  * Poetry-based CLI to run migrations and seeds ✅
+  * Poetry-based CLI to run migrations and seeds
 
 ---
 
@@ -115,14 +125,14 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 
 * **Stored procedures**
 
-  * `create_production_run(product_id, quantity)` ✅
+  * `create_production_run(product_id, quantity)`
 
     * Explode BOM, deduct raw and intermediary stock.
     * Insert `stock_transaction` rows.
 * **Triggers**
 
-  * BEFORE INSERT on `stock_transactions`: prevent negative stock ✅
-  * AFTER INSERT: update a material's `current_stock` in its table ✅
+  * BEFORE INSERT on `stock_transactions`: prevent negative stock
+  * AFTER INSERT: update a material's `current_stock` in its table
 
 ---
 
@@ -140,14 +150,14 @@ Deliver a robust SQL-based inventory management system demonstrating database de
   )
   SELECT child_id, SUM(qty) FROM bom_tree GROUP BY child_id;
   ```
-  * Implemented as the `bom_explosion` SQL function ✅
+  * Implemented as the `bom_explosion` SQL function
 * **Stock-on-hand**
 
   * Aggregate `stock_transactions` by product and date.
-  * View `stock_on_hand` consolidates current stock across all item types ✅
+  * View `stock_on_hand` consolidates current stock across all item types
 * **Reorder alerts**
 
-  * View showing items below minimum threshold ✅ (`reorder_alerts` view)
+  * View showing items below minimum threshold (`reorder_alerts` view)
 
 ---
 
@@ -167,7 +177,7 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 
 ## 8. Continuous Integration & Quality
 
-* **GitHub Actions workflow** ✅
+* **GitHub Actions workflow**
 
   * On PR:
 
@@ -188,7 +198,7 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 * **Schema docs**
 
   * Table definitions, column descriptions, constraints.
-* **Embed ER diagram** ✅
+* **Embed ER diagram**
 
   * Add PNG or link to draw\.io.
 * **Usage examples**
@@ -201,8 +211,8 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 ## 10. Versioning, Releases & Maintenance
 
 * **Semantic tags**: `v0.1.0` schema only, `v0.2.0` + transactions, etc.
-* **CHANGELOG.md**: record new features, fixes, breaking changes. ✅
-* **Backup & restore scripts**: `pg_dump` and `psql` commands. ✅
+* **CHANGELOG.md**: record new features, fixes, breaking changes.
+* **Backup & restore scripts**: `pg_dump` and `psql` commands.
 * **Future growth**
 
   * Support multiple warehouses.

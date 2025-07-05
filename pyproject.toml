@@ -9,7 +9,8 @@ license = "MIT"
 python = "^3.11"
 click = "<8.2"
 
-[tool.poetry.dev-dependencies]
+
+[tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
 sqlfluff = "^2.3"
 

@@ -1,34 +1,18 @@
 # multi-level-inventory-sql
-[![CI](https://github.com/DiogoRibeiro7/multi-level-inventory-sql/actions/workflows/ci.yml/badge.svg)](https://github.com/DiogoRibeiro7/multi-level-inventory-sql/actions/workflows/ci.yml)
 Tracks inventory across raw materials, intermediary products, and finished goods.
 
 See ROADMAP.md for the technical roadmap and BUSINESS_ANALYSIS.md for business planning considerations.
 
 ## Setup
 1. Install PostgreSQL and ensure `psql` is available in your `PATH`.
-2. Run the migrations and seeds manually:
-   ```bash
-   psql -f db/migrations/001_create_schema.sql
-   psql -f db/migrations/002_add_stock_triggers.sql
-   psql -f db/migrations/003_create_views.sql
-   psql -f db/migrations/004_add_partners.sql
-   psql -f db/migrations/005_remove_stock_fk.sql
-   psql -f db/migrations/006_add_reorder_thresholds.sql
-   psql -f db/seeds/001_suppliers.sql
-   psql -f db/seeds/002_clients.sql
-   psql -f db/seeds/003_raw_materials.sql
-   psql -f db/seeds/004_intermediaries.sql
-   psql -f db/seeds/005_finished_products.sql
-   psql -f db/seeds/006_bom.sql
-   psql -f db/seeds/007_stock.sql
-   psql -f db/seeds/008_min_stock_levels.sql
-   ```
-   Seeds include additional products and a complete bill of materials.
-3. Alternatively, use the Poetry-based CLI:
+2. Install dependencies and run the CLI to apply all migrations and seeds:
    ```bash
    poetry install
    poetry run inventory-cli postgres://user:pass@localhost/dbname
    ```
+   The CLI executes every SQL file in `db/migrations` and `db/seeds` in order.
+3. If you prefer to run scripts manually, execute the files in those
+   directories with `psql`.
 
 After the migrations run, the `stock_on_hand` view provides an overview of
 current inventory levels:
@@ -52,9 +36,9 @@ SELECT * FROM bom_explosion(1); -- components for product with ID 1
 
 ## Continuous Integration
 
-This project uses a GitHub Actions workflow to ensure migrations, seeds,
-linting, and tests run on every pull request. The workflow spins up PostgreSQL,
-runs the CLI against it, and executes the test suite.
+This project includes a GitHub Actions workflow that runs on pushes to `main`
+and on pull requests. The job starts PostgreSQL, applies the migrations and
+seeds, lints SQL files, and executes the test suite.
 
 ## Backup and Restore
 Use the helper scripts in `scripts/` to back up the database and restore it later:
