@@ -43,6 +43,13 @@ To identify items that need replenishment, query the `reorder_alerts` view:
 SELECT * FROM reorder_alerts;
 ```
 
+Use the `bom_explosion` function to see the total components needed for a
+finished product:
+
+```sql
+SELECT * FROM bom_explosion(1); -- components for product with ID 1
+```
+
 ## Continuous Integration
 
 This project uses a GitHub Actions workflow to ensure migrations, seeds,

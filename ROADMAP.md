@@ -19,7 +19,7 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 
   * Tables: `raw_materials`, `intermediaries`, `finished_products`, `bom`, `stock_transactions`.
   * CRUD for each tier.
-  * BOM explosion queries.
+  * BOM explosion queries ✅
   * Stock-on-hand reports per tier and per location.
 * **Identify extras**
 
@@ -140,6 +140,7 @@ Deliver a robust SQL-based inventory management system demonstrating database de
   )
   SELECT child_id, SUM(qty) FROM bom_tree GROUP BY child_id;
   ```
+  * Implemented as the `bom_explosion` SQL function ✅
 * **Stock-on-hand**
 
   * Aggregate `stock_transactions` by product and date.
