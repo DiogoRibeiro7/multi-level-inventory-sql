@@ -98,6 +98,8 @@ Deliver a robust SQL-based inventory management system demonstrating database de
   * `004_add_partners.sql` adds clients and suppliers (implemented).
   * `005_remove_stock_fk.sql` drops a foreign key so stock transactions can
     reference all product types (implemented).
+  * `006_add_reorder_thresholds.sql` adds min stock columns and the
+    `reorder_alerts` view (implemented).
 * **Seed data**
 
   * Realistic raw materials (e.g. steel, plastic).
@@ -144,7 +146,7 @@ Deliver a robust SQL-based inventory management system demonstrating database de
   * View `stock_on_hand` consolidates current stock across all item types.
 * **Reorder alerts**
 
-  * View showing items below minimum threshold.
+  * View showing items below minimum threshold (implemented as `reorder_alerts`).
 
 ---
 
