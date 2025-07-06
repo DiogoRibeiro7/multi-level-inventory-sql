@@ -24,3 +24,12 @@ ALTER TABLE finished_products
 ADD COLUMN client_id INTEGER REFERENCES clients (id);
 
 COMMIT;
+
+-- Down
+-- BEGIN;
+-- ALTER TABLE finished_products DROP COLUMN IF EXISTS client_id;
+-- ALTER TABLE raw_materials DROP COLUMN IF EXISTS supplier_id;
+-- DROP TABLE IF EXISTS clients;
+-- DROP TABLE IF EXISTS suppliers;
+-- COMMIT;
+

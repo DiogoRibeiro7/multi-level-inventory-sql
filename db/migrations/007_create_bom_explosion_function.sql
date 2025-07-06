@@ -19,3 +19,9 @@ RETURNS TABLE (child_id INTEGER, quantity NUMERIC) AS $$
 $$ LANGUAGE sql;
 
 COMMIT;
+
+-- Down
+-- BEGIN;
+-- DROP FUNCTION IF EXISTS bom_explosion(integer);
+-- COMMIT;
+

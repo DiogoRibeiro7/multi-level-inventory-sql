@@ -11,8 +11,14 @@ See ROADMAP.md for the technical roadmap and BUSINESS_ANALYSIS.md for business p
    poetry run inventory-cli postgres://user:pass@localhost/dbname
    ```
    The CLI executes every SQL file in `db/migrations` and `db/seeds` in order.
+   The lock file is not committed; running `poetry install` will generate it
+   automatically.
 3. If you prefer to run scripts manually, execute the files in those
-   directories with `psql`.
+   directories with `psql`. Each migration script also contains a "Down"
+   section so schema changes can be rolled back if needed.
+
+pgTAP tests live in `tests/pgtap/` and are executed as part of the CI
+workflow to verify database functions and triggers.
 
 After the migrations run, the `stock_on_hand` view provides an overview of
 current inventory levels:

@@ -15,6 +15,8 @@ The following milestones are complete:
 * Reporting views (`stock_on_hand`, `reorder_alerts`)
 * `bom_explosion` function for component breakdowns
 * Poetry-based CLI and GitHub Actions workflow
+* Rollback sections for all migrations
+* Initial pgTAP tests verifying stored procedures
 
 ---
 

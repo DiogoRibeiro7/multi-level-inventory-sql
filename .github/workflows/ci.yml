@@ -25,13 +25,19 @@ jobs:
         with:
           python-version: '3.11'
       - uses: abatilo/actions-poetry@v2
-      - name: Install PostgreSQL client
-        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+      - name: Install PostgreSQL client and pgTAP
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client postgresql-16-pgtap
       - name: Install dependencies
         run: poetry install
       - name: Run migrations and seeds
         run: poetry run inventory-cli postgresql://postgres:postgres@localhost:5432/postgres
+      - name: Install pgTAP extension
+        run: psql postgresql://postgres:postgres@localhost:5432/postgres -c 'CREATE EXTENSION IF NOT EXISTS pgtap;'
       - name: Run lint
         run: poetry run sqlfluff lint db/**/*.sql
       - name: Run tests
         run: poetry run pytest -q
+      - name: Run pgTAP tests
+        run: pg_prove --dbname=postgresql://postgres:postgres@localhost:5432/postgres tests/pgtap/*.sql

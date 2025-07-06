@@ -15,3 +15,9 @@ SELECT id, sku, description, current_stock, 'finished' AS product_type
 FROM finished_products;
 
 COMMIT;
+
+-- Down
+-- BEGIN;
+-- DROP VIEW IF EXISTS stock_on_hand;
+-- COMMIT;
+

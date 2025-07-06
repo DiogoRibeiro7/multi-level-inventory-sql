@@ -45,3 +45,12 @@ FROM finished_products
 WHERE current_stock < min_stock_level;
 
 COMMIT;
+
+-- Down
+-- BEGIN;
+-- DROP VIEW IF EXISTS reorder_alerts;
+-- ALTER TABLE finished_products DROP COLUMN IF EXISTS min_stock_level;
+-- ALTER TABLE intermediaries DROP COLUMN IF EXISTS min_stock_level;
+-- ALTER TABLE raw_materials DROP COLUMN IF EXISTS min_stock_level;
+-- COMMIT;
+

@@ -57,3 +57,15 @@ AFTER INSERT ON stock_transactions
 FOR EACH ROW EXECUTE FUNCTION update_current_stock_after_insert();
 
 COMMIT;
+
+-- Down
+-- BEGIN;
+-- DROP TRIGGER IF EXISTS trg_update_current_stock ON stock_transactions;
+-- DROP TRIGGER IF EXISTS trg_check_stock_before_insert ON stock_transactions;
+-- DROP FUNCTION IF EXISTS update_current_stock_after_insert();
+-- DROP FUNCTION IF EXISTS check_stock_before_insert();
+-- ALTER TABLE finished_products DROP COLUMN IF EXISTS current_stock;
+-- ALTER TABLE intermediaries DROP COLUMN IF EXISTS current_stock;
+-- ALTER TABLE raw_materials DROP COLUMN IF EXISTS current_stock;
+-- COMMIT;
+

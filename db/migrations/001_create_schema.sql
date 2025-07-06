@@ -46,3 +46,13 @@ CREATE TABLE stock_transactions (
 );
 
 COMMIT;
+
+-- Down
+-- BEGIN;
+-- DROP TABLE IF EXISTS stock_transactions;
+-- DROP TABLE IF EXISTS bom;
+-- DROP TABLE IF EXISTS finished_products;
+-- DROP TABLE IF EXISTS intermediaries;
+-- DROP TABLE IF EXISTS raw_materials;
+-- COMMIT;
+
