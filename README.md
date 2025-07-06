@@ -36,9 +36,9 @@ SELECT * FROM bom_explosion(1); -- components for product with ID 1
 
 ## Continuous Integration
 
-This project includes a GitHub Actions workflow that runs on pushes to `main`
-and on pull requests. The job starts PostgreSQL, applies the migrations and
-seeds, lints SQL files, and executes the test suite.
+This project includes a GitHub Actions workflow that runs only after changes
+are merged to the `main` branch. The job starts PostgreSQL, applies the
+migrations and seeds, lints SQL files, and executes the test suite.
 
 ## Backup and Restore
 Use the helper scripts in `scripts/` to back up the database and restore it later:
