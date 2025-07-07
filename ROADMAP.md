@@ -17,6 +17,7 @@ The following milestones are complete:
 * Poetry-based CLI and GitHub Actions workflow
 * Rollback sections for all migrations
 * Initial pgTAP tests verifying stored procedures
+* Docker Compose integration test environment
 
 ---
 

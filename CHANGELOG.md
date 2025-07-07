@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] - 2025-07-06
+### Added
+- Docker Compose configuration for integration testing
+- pgTAP test validating `bom_explosion`
+
 ## [0.2.0] - 2025-07-05
 ### Added
 - Recursive `bom_explosion` function

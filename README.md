@@ -46,6 +46,19 @@ This project includes a GitHub Actions workflow that runs only after changes
 are merged to the `main` branch. The job starts PostgreSQL, applies the
 migrations and seeds, lints SQL files, and executes the test suite.
 
+## Integration Testing with Docker Compose
+
+Use Docker Compose to start a local PostgreSQL instance and run the full test
+suite. The helper script sets up the database, applies migrations and seeds,
+and then executes Python and pgTAP tests:
+
+```bash
+docker-compose up -d
+./scripts/integration_test.sh
+```
+
+The script shuts down the container when tests complete.
+
 ## Backup and Restore
 Use the helper scripts in `scripts/` to back up the database and restore it later:
 ```bash
