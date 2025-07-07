@@ -6,6 +6,19 @@ This document outlines the combined technical and business-analysis roadmap for 
 
 Deliver a robust SQL-based inventory management system demonstrating database design, migrations, testing, CI/CD, and business value realization.
 
+## Progress
+
+The following milestones are complete:
+
+* Core schema migrations and seed data
+* Trigger functions and `create_production_run` procedure
+* Reporting views (`stock_on_hand`, `reorder_alerts`)
+* `bom_explosion` function for component breakdowns
+* Poetry-based CLI and GitHub Actions workflow
+* Rollback sections for all migrations
+* Initial pgTAP tests verifying stored procedures
+* Docker Compose integration test environment
+
 ---
 
 ## 1. Project Kick-off & Planning
@@ -19,7 +32,7 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 
   * Tables: `raw_materials`, `intermediaries`, `finished_products`, `bom`, `stock_transactions`.
   * CRUD for each tier.
-  * BOM explosion queries.
+  * BOM explosion queries
   * Stock-on-hand reports per tier and per location.
 * **Identify extras**
 
@@ -95,11 +108,19 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 
   * Versioned, idempotent scripts.
   * Include `DOWN` scripts if your tool supports them.
+  * `004_add_partners.sql` adds clients and suppliers
+  * `005_remove_stock_fk.sql` drops a foreign key so stock transactions can
+    reference all product types
+  * `006_add_reorder_thresholds.sql` adds min stock columns and the
+    `reorder_alerts` view
 * **Seed data**
 
   * Realistic raw materials (e.g. steel, plastic).
   * Sample intermediaries (e.g. frame, casing).
   * Finished products (e.g. bicycle).
+  * Suppliers and clients linked to raw materials and finished products.
+  * Expanded dataset includes multiple bicycles and components.
+  * Poetry-based CLI to run migrations and seeds
 
 ---
 
@@ -113,8 +134,8 @@ Deliver a robust SQL-based inventory management system demonstrating database de
     * Insert `stock_transaction` rows.
 * **Triggers**
 
-  * BEFORE INSERT on `stock_transactions`: prevent negative stock.
-  * AFTER INSERT: update a material’s `current_stock` in its table.
+  * BEFORE INSERT on `stock_transactions`: prevent negative stock
+  * AFTER INSERT: update a material's `current_stock` in its table
 
 ---
 
@@ -132,12 +153,14 @@ Deliver a robust SQL-based inventory management system demonstrating database de
   )
   SELECT child_id, SUM(qty) FROM bom_tree GROUP BY child_id;
   ```
+  * Implemented as the `bom_explosion` SQL function
 * **Stock-on-hand**
 
   * Aggregate `stock_transactions` by product and date.
+  * View `stock_on_hand` consolidates current stock across all item types
 * **Reorder alerts**
 
-  * View showing items below minimum threshold.
+  * View showing items below minimum threshold (`reorder_alerts` view)
 
 ---
 
@@ -163,9 +186,10 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 
     1. Start Postgres service.
     2. Run migrations & seed data.
-    3. Execute tests.
-* **Badges in README**: build status, test coverage.
-* **Linting**: SQLFluff or similar for style checks.
+    3. Lint SQL files.
+    4. Execute tests.
+* **Badges in README**: build status (added), test coverage (TBD).
+* **Linting**: SQLFluff checks run in CI.
 
 ---
 
@@ -207,50 +231,4 @@ Deliver a robust SQL-based inventory management system demonstrating database de
 * **Short demo video**: show migrations, run a production batch, generate reports.
 * **Link in portfolio**: highlight architecture, SQL complexity, testing, CI.
 
----
-
-# Business Analysis Enhancements
-
-## 1. Business Objectives & Success Criteria
-
-* Define clear goals: reduce stock-out events by X%, cut holding costs by Y%, speed up production runs by Z%.
-* Establish KPIs and measurement methods (e.g. lead times, inventory turnover).
-
-## 2. Stakeholder Analysis & Communication Plan
-
-* Identify stakeholders: procurement, production managers, finance, IT, executives.
-* Specify communication channels and cadence: status reports, demos, sign-off checkpoints.
-
-## 3. Requirements Gathering & Prioritization
-
-* Conduct interviews or workshops to capture detailed needs (e.g. multi-warehouse support, expiry tracking).
-* Use MoSCoW or RICE framework to prioritize features and control scope creep.
-
-## 4. Cost, Timeline & Resource Estimates
-
-* Estimate effort (person-days per feature).
-* Assign roles: DBA, developer, tester, BA.
-* Budget for tools: CI/CD, diagramming licenses, hosting, and consultancy.
-
-## 5. Risk & Change Management
-
-* List top risks: data-migration complexity, performance at scale, staffing gaps.
-* Define mitigation strategies and escalation paths.
-* Plan for change requests: evaluation and approval process.
-
-## 6. Governance, Compliance & Security
-
-* Define data governance: table ownership, data quality enforcement.
-* Address regulatory requirements: ISO standards, GDPR compliance.
-* Specify roles for backups, access control, and audit trails.
-
-## 7. Training, Roll-Out & Support
-
-* Develop training plan for end-users and support teams.
-* Plan a phased rollout or pilot before full go-live.
-* Define SLAs for post-launch support and bug fixes.
-
-## 8. Post-Implementation Review
-
-* Schedule lessons-learned session after 3 months.
-* Compare actual ROI/KPIs against targets and document improvement opportunities.
+See BUSINESS_ANALYSIS.md for the accompanying business analysis plan.

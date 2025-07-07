@@ -1,0 +1,35 @@
+-- 004_add_partners.sql
+-- Adds clients and suppliers tables with relationships
+
+BEGIN;
+
+CREATE TABLE suppliers (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE clients (
+    id SERIAL PRIMARY KEY,
+    name TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+ALTER TABLE raw_materials
+ADD COLUMN supplier_id INTEGER REFERENCES suppliers (id);
+
+ALTER TABLE finished_products
+ADD COLUMN client_id INTEGER REFERENCES clients (id);
+
+COMMIT;
+
+-- Down
+-- BEGIN;
+-- ALTER TABLE finished_products DROP COLUMN IF EXISTS client_id;
+-- ALTER TABLE raw_materials DROP COLUMN IF EXISTS supplier_id;
+-- DROP TABLE IF EXISTS clients;
+-- DROP TABLE IF EXISTS suppliers;
+-- COMMIT;
+

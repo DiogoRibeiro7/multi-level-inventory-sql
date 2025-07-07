@@ -1,0 +1,17 @@
+# General
+.DS_Store
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Environment files
+.env
+venv/
+
+# Database
+*.sqlite
+
+poetry.lock
