@@ -2,75 +2,138 @@
 
 from __future__ import annotations
 
-from pathlib import Path
+import os
 import shutil
 import subprocess
+import tempfile
+from pathlib import Path
 from typing import Iterable
 
 
-def run_sql_file(conn_str: str, sql_file: str) -> None:
+def run_sql_file(conn_str: str, sql_file: str | Path) -> None:
     """Execute a SQL file using ``psql``.
 
-    Args:
-        conn_str: Database connection string understood by ``psql``.
-        sql_file: Path to the SQL file to execute.
+    Parameters
+    ----------
+    conn_str:
+        Database connection string understood by ``psql``.
+    sql_file:
+        Path to the SQL file to execute.
 
-    Raises:
-        RuntimeError: If ``psql`` is not available or execution fails.
+    Raises
+    ------
+    RuntimeError
+        If ``psql`` is not available or execution fails.
     """
 
     if shutil.which("psql") is None:
         raise RuntimeError("psql executable not found in PATH")
 
     try:
-        subprocess.run(["psql", conn_str, "-f", sql_file], check=True)
+        subprocess.run(["psql", conn_str, "-f", str(sql_file)], check=True)
     except subprocess.CalledProcessError as exc:  # pragma: no cover - defensive
         msg = f"Failed to execute {sql_file}: {exc}"
         raise RuntimeError(msg) from exc
 
 
 def run_migrations(
-    conn_str: str, directory: str = "db/migrations", to: str | None = None
+    conn_str: str, directory: str | Path = "db/migrations", to: str | None = None
 ) -> None:
     """Run migration scripts in order.
 
-    Args:
-        conn_str: Connection string for the target database.
-        directory: Directory containing migration ``.sql`` files.
-        to: Optional filename of the last migration to run.
+    Parameters
+    ----------
+    conn_str:
+        Connection string for the target database.
+    directory:
+        Directory containing migration ``.sql`` files.
+    to:
+        Optional filename of the last migration to run.
 
-    Raises:
-        RuntimeError: If a migration fails.
+    Raises
+    ------
+    RuntimeError
+        If a migration fails.
     """
 
-    paths = sorted(Path(directory).glob("*.sql"))
+    paths: list[Path] = sorted(Path(directory).glob("*.sql"))
     if to:
         paths = [p for p in paths if p.name <= to]
 
     for path in paths:
-        run_sql_file(conn_str, str(path))
+        run_sql_file(conn_str, path)
 
 
 def run_seeds(
-    conn_str: str, directory: str = "db/seeds", to: str | None = None
+    conn_str: str, directory: str | Path = "db/seeds", to: str | None = None
 ) -> None:
     """Execute seed scripts to populate reference data.
 
-    Args:
-        conn_str: Database connection string.
-        directory: Directory containing seed ``.sql`` files.
-        to: Optional filename of the last seed to run.
+    Parameters
+    ----------
+    conn_str:
+        Database connection string.
+    directory:
+        Directory containing seed ``.sql`` files.
+    to:
+        Optional filename of the last seed to run.
 
-    Raises:
-        RuntimeError: If a seed script fails.
+    Raises
+    ------
+    RuntimeError
+        If a seed script fails.
     """
 
-    paths = sorted(Path(directory).glob("*.sql"))
+    paths: list[Path] = sorted(Path(directory).glob("*.sql"))
     if to:
         paths = [p for p in paths if p.name <= to]
 
     for path in paths:
-        run_sql_file(conn_str, str(path))
+        run_sql_file(conn_str, path)
+
+
+def run_rollbacks(
+    conn_str: str, directory: str | Path = "db/migrations", to: str | None = None
+) -> None:
+    """Execute migration rollbacks in reverse order.
+
+    This parses the commented ``Down`` sections at the end of each migration
+    script and runs them using ``psql``. Migrations are processed from newest to
+    oldest and stop once ``to`` is reached.
+
+    Parameters
+    ----------
+    conn_str:
+        Database connection string.
+    directory:
+        Directory containing migration ``.sql`` files.
+    to:
+        Optional filename of the last rollback to execute (inclusive).
+    """
+
+    paths: list[Path] = sorted(Path(directory).glob("*.sql"), reverse=True)
+    for path in paths:
+        down_lines: list[str] = []
+        capture: bool = False
+        for line in path.read_text().splitlines():
+            stripped = line.lstrip()
+            if stripped.lower().startswith("-- down"):
+                capture = True
+                continue
+            if capture and stripped.startswith("--"):
+                down_lines.append(stripped[2:].lstrip())
+        if down_lines:
+            with tempfile.NamedTemporaryFile("w", delete=False) as tmp:
+                tmp.write("\n".join(down_lines))
+                tmp_path: str = tmp.name
+
+            try:
+                run_sql_file(conn_str, tmp_path)
+            finally:
+                os.unlink(tmp_path)
+
+        if to and path.name == to:
+            break
 
 
 def main(args: Iterable[str] | None = None) -> None:
@@ -97,6 +160,9 @@ def main(args: Iterable[str] | None = None) -> None:
     seed = sub.add_parser("seed", help="Run seed scripts")
     seed.add_argument("--to", help="Run seeds up to this file (inclusive)")
 
+    roll = sub.add_parser("rollback", help="Run migration rollbacks")
+    roll.add_argument("--to", help="Rollback down to this file (inclusive)")
+
     sub.add_parser("all", help="Run migrations and seeds (default)")
 
     parsed = parser.parse_args(list(args) if args is not None else None)
@@ -106,6 +172,8 @@ def main(args: Iterable[str] | None = None) -> None:
         run_migrations(parsed.conn, to=getattr(parsed, "to", None))
     elif cmd == "seed":
         run_seeds(parsed.conn, to=getattr(parsed, "to", None))
+    elif cmd == "rollback":
+        run_rollbacks(parsed.conn, to=getattr(parsed, "to", None))
     else:
         run_migrations(parsed.conn)
         run_seeds(parsed.conn)
