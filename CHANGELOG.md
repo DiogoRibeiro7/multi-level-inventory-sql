@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Typed BOM relationships so finished products and intermediaries can reference lower-level components
 - Recursive `bom_explosion` output across intermediary and raw-material levels
+- Reporting indexes for stock transaction date and product lookups
 
 ### Fixed
 - Deploy `create_production_run` through the migration path used by the CLI
