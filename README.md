@@ -113,4 +113,6 @@ The [docs/ERD.md](docs/ERD.md) file contains the entity relationship overview,
 and [docs/ERD.drawio](docs/ERD.drawio) is the editable diagram source.
 The [docs/SCHEMA.md](docs/SCHEMA.md) file documents tables, views, constraints,
 and database functions.
+The [docs/RELEASE.md](docs/RELEASE.md) file documents the semantic versioning
+and release workflow used by the project.
 See [CHANGELOG.md](CHANGELOG.md) for release notes.

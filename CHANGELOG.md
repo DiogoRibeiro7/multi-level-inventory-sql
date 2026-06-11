@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+Target release: `0.4.0`
+
 ### Added
 - Typed BOM relationships so finished products and intermediaries can reference lower-level components
 - Recursive `bom_explosion` output across intermediary and raw-material levels
@@ -15,6 +17,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - Backup and restore scripts now validate prerequisites, fail fast on errors,
   and document safer operational usage
+- Project metadata and documentation now target the upcoming `0.4.0` release
 
 ### Fixed
 - Deploy `create_production_run` through the migration path used by the CLI

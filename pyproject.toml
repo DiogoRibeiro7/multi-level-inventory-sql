@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "inventory"
-version = "0.1.0"
+version = "0.4.0"
 description = "Utilities for managing the multi-level inventory SQL project"
 authors = ["Diogo Ribeiro <dfr@esmad.ipp.pt>"]
 license = "MIT"
