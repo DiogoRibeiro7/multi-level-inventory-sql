@@ -15,6 +15,7 @@ Target release: `0.4.0`
 - Editable draw.io ER diagram source linked from the docs
 - Showcase/demo guide for presenting the project in a portfolio or walkthrough
 - Warehouse metadata, seeded warehouse records, and a `stock_on_hand_by_warehouse` view
+- Warehouse-aware `create_production_run(product_id, quantity, warehouse_id)` support
 
 ### Changed
 - Backup and restore scripts now validate prerequisites, fail fast on errors,

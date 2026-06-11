@@ -177,12 +177,22 @@ Output columns:
 
 ### `create_production_run(product_id, quantity)`
 
+Wrapper that posts a production run to the default `MAIN` warehouse when one
+exists.
+
+Behavior:
+- Delegates to `create_production_run(product_id, quantity, warehouse_id)`.
+- Uses the `MAIN` warehouse when it is present.
+
+### `create_production_run(product_id, quantity, warehouse_id)`
+
 Consumes the direct BOM children of a finished product and adds the requested
-finished quantity to stock.
+finished quantity to stock in the selected warehouse context.
 
 Behavior:
 - Rejects `quantity <= 0`.
 - Rejects unknown finished product IDs.
+- Rejects unknown warehouse IDs when a warehouse is supplied.
 - Rejects production runs for products without a BOM.
 - Inserts one negative `stock_transactions` row per direct BOM child.
 - Inserts one positive finished-goods `stock_transactions` row.

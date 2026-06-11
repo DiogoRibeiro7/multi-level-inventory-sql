@@ -72,6 +72,16 @@ SELECT create_production_run(
 );
 ```
 
+To create a production run and assign it to a specific warehouse:
+
+```sql
+SELECT create_production_run(
+  (SELECT id FROM finished_products WHERE sku = 'BIKE001'),
+  1,
+  (SELECT id FROM warehouses WHERE code = 'AUX')
+);
+```
+
 To inspect the transaction history for one SKU:
 
 ```sql

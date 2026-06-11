@@ -1,5 +1,7 @@
--- create_production_run
--- Produces finished goods and deducts required intermediaries.
+-- 012_add_warehouse_aware_production.sql
+-- Adds a warehouse-aware production-run overload
+
+BEGIN;
 
 CREATE OR REPLACE FUNCTION create_production_run(
     p_product_id INTEGER,
@@ -46,7 +48,7 @@ BEGIN
         WHERE parent_type = 'finished'
           AND parent_id = p_product_id
     LOOP
-        INSERT INTO stock_transactions(
+        INSERT INTO stock_transactions (
             product_id,
             product_type,
             quantity,
@@ -60,13 +62,18 @@ BEGIN
         );
     END LOOP;
 
-    INSERT INTO stock_transactions(
+    INSERT INTO stock_transactions (
         product_id,
         product_type,
         quantity,
         warehouse_id
     )
-    VALUES (p_product_id, 'finished', p_quantity, p_warehouse_id);
+    VALUES (
+        p_product_id,
+        'finished',
+        p_quantity,
+        p_warehouse_id
+    );
 END;
 $$ LANGUAGE plpgsql;
 
@@ -90,3 +97,10 @@ BEGIN
     );
 END;
 $$ LANGUAGE plpgsql;
+
+COMMIT;
+
+-- Down
+-- BEGIN;
+-- DROP FUNCTION IF EXISTS create_production_run(integer, numeric, integer);
+-- COMMIT;

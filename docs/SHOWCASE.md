@@ -120,6 +120,9 @@ ORDER BY product_type, sku;
 
 This demonstrates component consumption plus finished-goods incrementing.
 
+To show the warehouse-aware extension, run the three-argument version with
+`AUX` and then query `stock_on_hand_by_warehouse`.
+
 ### 6. Show test and CI quality controls
 
 Highlight:

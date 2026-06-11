@@ -1,5 +1,5 @@
 BEGIN;
-SELECT plan(4);
+SELECT plan(5);
 
 SELECT is(
   (
@@ -46,6 +46,17 @@ SELECT is(
     WHERE sku = 'STEEL001'
   ),
   'Warehouse-level totals reconcile to the global stock balance'
+);
+
+SELECT lives_ok(
+  $$
+    SELECT create_production_run(
+      (SELECT id FROM finished_products WHERE sku = 'BIKE001'),
+      1::numeric,
+      (SELECT id FROM warehouses WHERE code = 'AUX')
+    );
+  $$,
+  'Warehouse-aware production can target the AUX warehouse'
 );
 
 SELECT finish();
