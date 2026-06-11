@@ -1,5 +1,5 @@
 BEGIN;
-SELECT plan(6);
+SELECT plan(7);
 
 SELECT has_function('public', 'create_production_run', ARRAY['integer','numeric'], 'Function exists');
 
@@ -46,6 +46,18 @@ SELECT is(
   (SELECT current_stock FROM finished_products WHERE sku = 'BIKE001'),
   (SELECT bike_stock + 1 FROM before),
   'Finished product stock increased by 1'
+);
+
+SELECT throws_ok(
+  $$
+    SELECT create_production_run(
+      (SELECT id FROM finished_products WHERE sku = 'BIKE001'),
+      0::numeric
+    );
+  $$,
+  'P0001',
+  'Production quantity must be greater than zero',
+  'Rejects zero-quantity production runs'
 );
 
 SELECT finish();

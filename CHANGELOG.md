@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+### Fixed
+- Deploy `create_production_run` through the migration path used by the CLI
+- Reject stock transactions that reference missing products
+- Validate production runs require a positive quantity and a valid BOM
+
 ## [0.3.0] - 2025-07-06
 ### Added
 - Docker Compose configuration for integration testing
