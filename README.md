@@ -115,4 +115,6 @@ The [docs/SCHEMA.md](docs/SCHEMA.md) file documents tables, views, constraints,
 and database functions.
 The [docs/RELEASE.md](docs/RELEASE.md) file documents the semantic versioning
 and release workflow used by the project.
+The [docs/SHOWCASE.md](docs/SHOWCASE.md) file provides a portfolio/demo
+walkthrough of the project.
 See [CHANGELOG.md](CHANGELOG.md) for release notes.

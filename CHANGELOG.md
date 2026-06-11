@@ -13,6 +13,7 @@ Target release: `0.4.0`
 - pgTAP integrity checks that assert no negative balances remain in stock tables or views
 - Schema reference documentation and concrete README usage examples
 - Editable draw.io ER diagram source linked from the docs
+- Showcase/demo guide for presenting the project in a portfolio or walkthrough
 
 ### Changed
 - Backup and restore scripts now validate prerequisites, fail fast on errors,
