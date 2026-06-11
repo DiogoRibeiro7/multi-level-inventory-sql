@@ -16,3 +16,5 @@ finished_products --< stock_transactions
 intermediaries   --< stock_transactions
 raw_materials    --< stock_transactions
 ```
+
+For a field-level schema reference, see [SCHEMA.md](SCHEMA.md).

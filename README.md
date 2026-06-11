@@ -20,6 +20,19 @@ See ROADMAP.md for the technical roadmap and BUSINESS_ANALYSIS.md for business p
 pgTAP tests live in `tests/pgtap/` and are executed as part of the CI
 workflow to verify database functions, triggers, and post-run stock integrity.
 
+## Architecture Overview
+
+The database models three inventory tiers:
+
+- `raw_materials`: purchased inputs.
+- `intermediaries`: stocked sub-assemblies.
+- `finished_products`: sellable output items.
+
+Inventory movement is written to `stock_transactions`, while `current_stock`
+on each item table is maintained by triggers. Multi-level production structure
+is stored in the typed `bom` table, which allows finished products to consume
+intermediaries and intermediaries to consume raw materials.
+
 After the migrations run, the `stock_on_hand` view provides an overview of
 current inventory levels:
 
@@ -38,6 +51,27 @@ finished product across intermediary and raw-material levels:
 
 ```sql
 SELECT * FROM bom_explosion(1); -- components for product with ID 1
+```
+
+To create a production run for one finished bike:
+
+```sql
+SELECT create_production_run(
+  (SELECT id FROM finished_products WHERE sku = 'BIKE001'),
+  1
+);
+```
+
+To inspect the transaction history for one SKU:
+
+```sql
+SELECT st.*
+FROM stock_transactions AS st
+JOIN finished_products AS fp
+  ON fp.id = st.product_id
+WHERE st.product_type = 'finished'
+  AND fp.sku = 'BIKE001'
+ORDER BY st.transaction_date DESC;
 ```
 
 ## Continuous Integration
@@ -68,4 +102,6 @@ Use the helper scripts in `scripts/` to back up the database and restore it late
 
 ## Documentation
 The [docs/ERD.md](docs/ERD.md) file contains an entity relationship diagram.
+The [docs/SCHEMA.md](docs/SCHEMA.md) file documents tables, views, constraints,
+and database functions.
 See [CHANGELOG.md](CHANGELOG.md) for release notes.

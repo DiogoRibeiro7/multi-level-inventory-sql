@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - Reporting indexes for stock transaction date and product lookups
 - GitHub Actions CI now runs on pull requests targeting `main`
 - pgTAP integrity checks that assert no negative balances remain in stock tables or views
+- Schema reference documentation and concrete README usage examples
 
 ### Fixed
 - Deploy `create_production_run` through the migration path used by the CLI
