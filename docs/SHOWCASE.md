@@ -18,6 +18,7 @@ The repository demonstrates:
 - schema design for tiered inventory
 - forward-only SQL migrations
 - multi-level bill-of-materials modeling
+- incremental multi-warehouse support
 - trigger-enforced stock integrity
 - stored procedures for production flow
 - pgTAP and Python-based validation
@@ -126,6 +127,7 @@ Highlight:
 - `tests/pgtap/` for database correctness
 - `tests/test_cli.py` for CLI behavior
 - `.github/workflows/ci.yml` for automated verification
+- `stock_on_hand_by_warehouse` as the first future-growth warehouse report
 
 ## Design Decisions to Mention
 

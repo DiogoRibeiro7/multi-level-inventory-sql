@@ -14,6 +14,7 @@ Target release: `0.4.0`
 - Schema reference documentation and concrete README usage examples
 - Editable draw.io ER diagram source linked from the docs
 - Showcase/demo guide for presenting the project in a portfolio or walkthrough
+- Warehouse metadata, seeded warehouse records, and a `stock_on_hand_by_warehouse` view
 
 ### Changed
 - Backup and restore scripts now validate prerequisites, fail fast on errors,

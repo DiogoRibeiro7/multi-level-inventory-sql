@@ -86,6 +86,7 @@ Columns:
 - `id`: surrogate primary key.
 - `product_id`: identifier in the table implied by `product_type`.
 - `product_type`: one of `raw`, `intermediate`, or `finished`.
+- `warehouse_id`: optional reference to `warehouses.id`.
 - `quantity`: positive for inbound stock, negative for consumption.
 - `transaction_date`: timestamp for the movement.
 
@@ -94,10 +95,25 @@ Constraints and indexes:
 - `product_type` restricted to `raw`, `intermediate`, and `finished`.
 - Index on `transaction_date`.
 - Composite lookup index on `product_type, product_id`.
+- Warehouse lookup index on `warehouse_id, product_type, product_id`.
 - Trigger `trg_check_stock_before_insert` blocks missing references and
   negative balances.
 - Trigger `trg_update_current_stock` applies the transaction to the relevant
   stock table.
+
+### `warehouses`
+
+Stores warehouse or storage-location metadata used by stock transactions.
+
+Columns:
+- `id`: surrogate primary key.
+- `code`: unique warehouse code.
+- `warehouse_name`: human-readable warehouse name.
+- `created_at`, `updated_at`: timestamps.
+
+Constraints:
+- Primary key on `id`.
+- Unique constraint on `code`.
 
 ### `suppliers`
 
@@ -142,6 +158,20 @@ Output columns:
 - `current_stock`
 - `min_stock_level`
 - `product_type`
+
+### `stock_on_hand_by_warehouse`
+
+Aggregates stock balances by warehouse and product.
+
+Output columns:
+- `warehouse_id`
+- `warehouse_code`
+- `warehouse_name`
+- `product_id`
+- `sku`
+- `description`
+- `product_type`
+- `current_stock`
 
 ## Functions
 

@@ -8,6 +8,7 @@ Relationship summary:
 ```text
 suppliers --< raw_materials
 clients   --< finished_products
+warehouses --< stock_transactions
 
 finished_products --< bom >-- intermediaries
 intermediaries   --< bom >-- raw_materials
@@ -23,5 +24,7 @@ Notes:
   `parent_type` and `child_type` rather than fixed foreign keys.
 - `stock_transactions` is also typed and can reference any of the three stock
   tiers through `product_type`.
+- `warehouse_id` on `stock_transactions` adds location context without
+  changing the existing global stock-balance model.
 
 For a field-level schema reference, see [SCHEMA.md](SCHEMA.md).

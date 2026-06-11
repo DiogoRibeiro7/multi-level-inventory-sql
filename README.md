@@ -31,13 +31,23 @@ The database models three inventory tiers:
 Inventory movement is written to `stock_transactions`, while `current_stock`
 on each item table is maintained by triggers. Multi-level production structure
 is stored in the typed `bom` table, which allows finished products to consume
-intermediaries and intermediaries to consume raw materials.
+intermediaries and intermediaries to consume raw materials. Warehouses are
+tracked as metadata on stock transactions, with per-warehouse balances exposed
+through a reporting view.
 
 After the migrations run, the `stock_on_hand` view provides an overview of
 current inventory levels:
 
 ```sql
 SELECT * FROM stock_on_hand;
+```
+
+To inspect balances by warehouse:
+
+```sql
+SELECT *
+FROM stock_on_hand_by_warehouse
+ORDER BY warehouse_code, product_type, sku;
 ```
 
 To identify items that need replenishment, query the `reorder_alerts` view:
