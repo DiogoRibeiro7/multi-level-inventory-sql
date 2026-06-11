@@ -100,6 +100,14 @@ Use the helper scripts in `scripts/` to back up the database and restore it late
 ./scripts/restore.sh postgres://user:pass@localhost/dbname /path/to/backup.sql
 ```
 
+Operational notes:
+- `backup.sh` requires `pg_dump` in `PATH`, creates parent directories when
+  needed, and refuses to overwrite an existing backup file.
+- `restore.sh` requires `psql` in `PATH`, fails if the backup file is missing,
+  and runs with `ON_ERROR_STOP=1` so SQL errors abort the restore.
+- Restore into an empty or disposable database when validating a backup, since
+  the script replays SQL exactly as stored in the dump.
+
 ## Documentation
 The [docs/ERD.md](docs/ERD.md) file contains the entity relationship overview,
 and [docs/ERD.drawio](docs/ERD.drawio) is the editable diagram source.

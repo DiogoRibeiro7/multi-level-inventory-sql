@@ -12,6 +12,10 @@ All notable changes to this project will be documented in this file.
 - Schema reference documentation and concrete README usage examples
 - Editable draw.io ER diagram source linked from the docs
 
+### Changed
+- Backup and restore scripts now validate prerequisites, fail fast on errors,
+  and document safer operational usage
+
 ### Fixed
 - Deploy `create_production_run` through the migration path used by the CLI
 - Reject stock transactions that reference missing products
