@@ -1,21 +1,23 @@
-[tool.poetry]
+[project]
 name = "inventory"
 version = "0.4.0"
 description = "Utilities for managing the multi-level inventory SQL project"
-authors = ["Diogo Ribeiro <dfr@esmad.ipp.pt>"]
+authors = [
+    { name = "Diogo Ribeiro", email = "dfr@esmad.ipp.pt" }
+]
 license = "MIT"
+requires-python = ">=3.11,<4.0"
+dependencies = [
+    "click<8.2",
+]
+
+[project.scripts]
+inventory-cli = "inventory.cli:main"
 
 [tool.poetry.dependencies]
-python = "^3.11"
-click = "<8.2"
-
-
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
 sqlfluff = "^2.3"
-
-[tool.poetry.scripts]
-inventory-cli = "inventory.cli:main"
 
 [build-system]
 requires = ["poetry-core"]
