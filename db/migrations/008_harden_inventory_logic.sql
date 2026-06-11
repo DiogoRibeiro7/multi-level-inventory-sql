@@ -56,7 +56,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION create_production_run(p_product_id INTEGER, p_quantity NUMERIC)
+CREATE OR REPLACE FUNCTION create_production_run(
+    p_product_id INTEGER, p_quantity NUMERIC
+)
 RETURNS VOID AS $$
 DECLARE
     component RECORD;

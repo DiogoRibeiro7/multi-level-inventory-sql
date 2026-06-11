@@ -6,8 +6,11 @@ clients   --< finished_products
 
 raw_materials --< intermediaries --< finished_products
 
-raw_materials --< bom >-- intermediaries
-intermediaries --< bom >-- finished_products
+bom stores typed parent/child links:
+- finished_products -> intermediaries
+- finished_products -> raw_materials
+- intermediaries -> raw_materials
+- intermediaries -> intermediaries
 
 finished_products --< stock_transactions
 intermediaries   --< stock_transactions

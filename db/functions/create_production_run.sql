@@ -21,18 +21,20 @@ BEGIN
     IF NOT EXISTS (
         SELECT 1
         FROM bom
-        WHERE parent_id = p_product_id
+        WHERE parent_type = 'finished'
+          AND parent_id = p_product_id
     ) THEN
         RAISE EXCEPTION 'No BOM defined for finished product %', p_product_id;
     END IF;
 
     FOR component IN
-        SELECT child_id, quantity
+        SELECT child_id, child_type, quantity
         FROM bom
-        WHERE parent_id = p_product_id
+        WHERE parent_type = 'finished'
+          AND parent_id = p_product_id
     LOOP
         INSERT INTO stock_transactions(product_id, product_type, quantity)
-        VALUES (component.child_id, 'intermediate', -component.quantity * p_quantity);
+        VALUES (component.child_id, component.child_type, -component.quantity * p_quantity);
     END LOOP;
 
     INSERT INTO stock_transactions(product_id, product_type, quantity)

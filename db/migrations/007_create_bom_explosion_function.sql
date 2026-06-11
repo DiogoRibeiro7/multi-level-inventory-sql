@@ -3,8 +3,8 @@
 BEGIN;
 
 CREATE OR REPLACE FUNCTION bom_explosion(p_parent_id INTEGER)
-RETURNS TABLE (child_id INTEGER, quantity NUMERIC) AS $$
-    SELECT child_id, quantity
+RETURNS TABLE (child_id INTEGER, child_type TEXT, quantity NUMERIC) AS $$
+    SELECT child_id, 'intermediate'::TEXT AS child_type, quantity
     FROM bom
     WHERE parent_id = p_parent_id;
 $$ LANGUAGE sql;
@@ -15,4 +15,3 @@ COMMIT;
 -- BEGIN;
 -- DROP FUNCTION IF EXISTS bom_explosion(integer);
 -- COMMIT;
-

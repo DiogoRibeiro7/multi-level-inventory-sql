@@ -34,7 +34,7 @@ SELECT * FROM reorder_alerts;
 ```
 
 Use the `bom_explosion` function to see the total components needed for a
-finished product:
+finished product across intermediary and raw-material levels:
 
 ```sql
 SELECT * FROM bom_explosion(1); -- components for product with ID 1
