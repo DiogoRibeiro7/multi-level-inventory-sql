@@ -18,7 +18,7 @@ See ROADMAP.md for the technical roadmap and BUSINESS_ANALYSIS.md for business p
    section so schema changes can be rolled back if needed.
 
 pgTAP tests live in `tests/pgtap/` and are executed as part of the CI
-workflow to verify database functions and triggers.
+workflow to verify database functions, triggers, and post-run stock integrity.
 
 After the migrations run, the `stock_on_hand` view provides an overview of
 current inventory levels:

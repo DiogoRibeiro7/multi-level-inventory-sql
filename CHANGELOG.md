@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - Recursive `bom_explosion` output across intermediary and raw-material levels
 - Reporting indexes for stock transaction date and product lookups
 - GitHub Actions CI now runs on pull requests targeting `main`
+- pgTAP integrity checks that assert no negative balances remain in stock tables or views
 
 ### Fixed
 - Deploy `create_production_run` through the migration path used by the CLI
