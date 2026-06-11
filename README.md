@@ -42,8 +42,8 @@ SELECT * FROM bom_explosion(1); -- components for product with ID 1
 
 ## Continuous Integration
 
-This project includes a GitHub Actions workflow that runs only after changes
-are merged to the `main` branch. The job starts PostgreSQL, applies the
+This project includes a GitHub Actions workflow that runs on pull requests to
+`main` and on pushes to `main`. The job starts PostgreSQL, applies the
 migrations and seeds, lints SQL files, and executes the test suite.
 
 ## Integration Testing with Docker Compose
