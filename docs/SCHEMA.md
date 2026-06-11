@@ -197,6 +197,19 @@ Behavior:
 - Inserts one negative `stock_transactions` row per direct BOM child.
 - Inserts one positive finished-goods `stock_transactions` row.
 
+### `transfer_stock(product_id, product_type, quantity, from_warehouse_id, to_warehouse_id)`
+
+Moves stock for one typed product from one warehouse to another.
+
+Behavior:
+- Rejects `quantity <= 0`.
+- Rejects unsupported product types.
+- Rejects identical source and destination warehouses.
+- Rejects unknown product or warehouse IDs.
+- Rejects transfers that would overdraw the source warehouse balance.
+- Inserts one negative source-warehouse transaction and one positive
+  destination-warehouse transaction.
+
 ### `bom_explosion(parent_id)`
 
 Recursively expands the BOM of a finished product and returns the rolled-up

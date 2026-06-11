@@ -50,6 +50,18 @@ FROM stock_on_hand_by_warehouse
 ORDER BY warehouse_code, product_type, sku;
 ```
 
+To transfer stock between warehouses:
+
+```sql
+SELECT transfer_stock(
+  (SELECT id FROM finished_products WHERE sku = 'BIKE001'),
+  'finished',
+  2,
+  (SELECT id FROM warehouses WHERE code = 'MAIN'),
+  (SELECT id FROM warehouses WHERE code = 'AUX')
+);
+```
+
 To identify items that need replenishment, query the `reorder_alerts` view:
 
 ```sql

@@ -131,6 +131,7 @@ Highlight:
 - `tests/test_cli.py` for CLI behavior
 - `.github/workflows/ci.yml` for automated verification
 - `stock_on_hand_by_warehouse` as the first future-growth warehouse report
+- `transfer_stock(...)` for explicit warehouse-to-warehouse movement
 
 ## Design Decisions to Mention
 

@@ -16,6 +16,7 @@ Target release: `0.4.0`
 - Showcase/demo guide for presenting the project in a portfolio or walkthrough
 - Warehouse metadata, seeded warehouse records, and a `stock_on_hand_by_warehouse` view
 - Warehouse-aware `create_production_run(product_id, quantity, warehouse_id)` support
+- Explicit `transfer_stock(...)` support for warehouse-to-warehouse moves
 
 ### Changed
 - Backup and restore scripts now validate prerequisites, fail fast on errors,
