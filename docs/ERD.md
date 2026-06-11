@@ -1,20 +1,27 @@
 # Entity Relationship Diagram
 
+The editable diagram source lives in [ERD.drawio](ERD.drawio). Open it in
+[diagrams.net](https://app.diagrams.net/) or any draw.io-compatible editor.
+
+Relationship summary:
+
 ```text
 suppliers --< raw_materials
 clients   --< finished_products
 
-raw_materials --< intermediaries --< finished_products
+finished_products --< bom >-- intermediaries
+intermediaries   --< bom >-- raw_materials
+intermediaries   --< bom >-- intermediaries
 
-bom stores typed parent/child links:
-- finished_products -> intermediaries
-- finished_products -> raw_materials
-- intermediaries -> raw_materials
-- intermediaries -> intermediaries
-
-finished_products --< stock_transactions
-intermediaries   --< stock_transactions
 raw_materials    --< stock_transactions
+intermediaries   --< stock_transactions
+finished_products --< stock_transactions
 ```
+
+Notes:
+- `bom` is a typed relationship table, so parent and child rows are resolved by
+  `parent_type` and `child_type` rather than fixed foreign keys.
+- `stock_transactions` is also typed and can reference any of the three stock
+  tiers through `product_type`.
 
 For a field-level schema reference, see [SCHEMA.md](SCHEMA.md).

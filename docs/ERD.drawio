@@ -1,0 +1,58 @@
+<mxfile host="app.diagrams.net" modified="2026-06-11T18:05:00.000Z" agent="Codex" version="24.7.17">
+  <diagram id="inventory-erd" name="Inventory ERD">
+    <mxGraphModel dx="1200" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="suppliers" value="suppliers&#xa;PK id&#xa;name" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="180" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="clients" value="clients&#xa;PK id&#xa;name" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1260" y="40" width="180" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="raw_materials" value="raw_materials&#xa;PK id&#xa;UK sku&#xa;FK supplier_id&#xa;current_stock&#xa;min_stock_level" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="220" width="220" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="intermediaries" value="intermediaries&#xa;PK id&#xa;UK sku&#xa;current_stock&#xa;min_stock_level" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="470" y="220" width="220" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="finished_products" value="finished_products&#xa;PK id&#xa;UK sku&#xa;FK client_id&#xa;current_stock&#xa;min_stock_level" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1140" y="220" width="220" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="bom" value="bom&#xa;PK (parent_type, parent_id, child_type, child_id)&#xa;quantity&#xa;parent_type in (intermediate, finished)&#xa;child_type in (raw, intermediate)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="480" width="360" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="stock_transactions" value="stock_transactions&#xa;PK id&#xa;product_type&#xa;product_id&#xa;quantity&#xa;transaction_date" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="720" width="300" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="1:n supplier" style="endArrow=block;endFill=1;html=1;rounded=0;" edge="1" parent="1" source="suppliers" target="raw_materials">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="1:n client" style="endArrow=block;endFill=1;html=1;rounded=0;" edge="1" parent="1" source="clients" target="finished_products">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="finished parent" style="endArrow=block;endFill=1;html=1;rounded=0;" edge="1" parent="1" source="finished_products" target="bom">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="intermediate parent" style="endArrow=block;endFill=1;html=1;rounded=0;" edge="1" parent="1" source="intermediaries" target="bom">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="raw child" style="endArrow=block;endFill=1;html=1;rounded=0;" edge="1" parent="1" source="bom" target="raw_materials">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="intermediate child" style="endArrow=block;endFill=1;html=1;rounded=0;" edge="1" parent="1" source="bom" target="intermediaries">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="typed stock reference" style="endArrow=block;endFill=1;html=1;rounded=0;" edge="1" parent="1" source="raw_materials" target="stock_transactions">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="typed stock reference" style="endArrow=block;endFill=1;html=1;rounded=0;" edge="1" parent="1" source="intermediaries" target="stock_transactions">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" value="typed stock reference" style="endArrow=block;endFill=1;html=1;rounded=0;" edge="1" parent="1" source="finished_products" target="stock_transactions">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

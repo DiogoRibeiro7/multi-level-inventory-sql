@@ -101,7 +101,8 @@ Use the helper scripts in `scripts/` to back up the database and restore it late
 ```
 
 ## Documentation
-The [docs/ERD.md](docs/ERD.md) file contains an entity relationship diagram.
+The [docs/ERD.md](docs/ERD.md) file contains the entity relationship overview,
+and [docs/ERD.drawio](docs/ERD.drawio) is the editable diagram source.
 The [docs/SCHEMA.md](docs/SCHEMA.md) file documents tables, views, constraints,
 and database functions.
 See [CHANGELOG.md](CHANGELOG.md) for release notes.
