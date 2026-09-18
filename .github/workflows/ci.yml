@@ -53,3 +53,6 @@ jobs:
 
       - name: Run pgTAP tests
         run: pg_prove --dbname=postgresql://postgres:postgres@localhost:5432/postgres tests/pgtap/*.sql
+
+      - name: Build documentation
+        run: poetry run mkdocs build --strict
