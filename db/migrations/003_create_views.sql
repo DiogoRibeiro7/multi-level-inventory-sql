@@ -20,4 +20,3 @@ COMMIT;
 -- BEGIN;
 -- DROP VIEW IF EXISTS stock_on_hand;
 -- COMMIT;
-

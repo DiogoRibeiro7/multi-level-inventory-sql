@@ -68,4 +68,3 @@ COMMIT;
 -- ALTER TABLE intermediaries DROP COLUMN IF EXISTS current_stock;
 -- ALTER TABLE raw_materials DROP COLUMN IF EXISTS current_stock;
 -- COMMIT;
-

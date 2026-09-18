@@ -55,4 +55,3 @@ COMMIT;
 -- DROP TABLE IF EXISTS intermediaries;
 -- DROP TABLE IF EXISTS raw_materials;
 -- COMMIT;
-

@@ -1,5 +1,5 @@
 BEGIN;
-SELECT plan(10);
+SELECT plan(11);
 
 SELECT has_function('public', 'create_production_run', ARRAY['integer','numeric'], 'Function exists');
 SELECT has_function('public', 'create_production_run', ARRAY['integer','numeric','integer'], 'Warehouse-aware overload exists');
