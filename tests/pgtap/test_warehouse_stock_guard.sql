@@ -17,7 +17,10 @@ SELECT throws_ok(
     );
   $$,
   'P0001',
-  'Insufficient stock for product 1',
+  format(
+    'Insufficient stock for product %s',
+    (SELECT id FROM finished_products WHERE sku = 'BIKE001')
+  ),
   'Global stock invariant still rejects an excessive withdrawal'
 );
 
@@ -50,7 +53,10 @@ SELECT throws_ok(
     );
   $$,
   'P0001',
-  'Insufficient warehouse stock for product 1',
+  format(
+    'Insufficient warehouse stock for product %s',
+    (SELECT id FROM finished_products WHERE sku = 'BIKE001')
+  ),
   'Warehouse withdrawal cannot exceed the warehouse balance'
 );
 
