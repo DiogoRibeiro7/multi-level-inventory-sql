@@ -26,7 +26,8 @@ The CLI executes every SQL file in `db/migrations` and `db/seeds` in order.
 
 ## Documentation
 
-The project documentation is built with MkDocs Material.
+The project documentation is built with MkDocs Material and published at
+https://diogoribeiro7.github.io/multi-level-inventory-sql/.
 
 Build it locally:
 
