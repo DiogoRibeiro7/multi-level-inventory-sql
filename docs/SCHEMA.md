@@ -1,146 +1,143 @@
 # Schema Reference
 
-This document summarizes the tables, views, and functions created by the
-current migration set.
+This page documents the **final database state after all migrations currently in
+`db/migrations/` are applied**.
 
 ## Tables
 
-### `raw_materials`
-
-Stores purchased inputs used directly by intermediaries or finished products.
-
-Columns:
-- `id`: surrogate primary key.
-- `sku`: unique stock keeping unit.
-- `description`: human-readable item name.
-- `supplier_id`: optional reference to `suppliers.id`.
-- `current_stock`: running on-hand balance maintained by triggers.
-- `min_stock_level`: reorder threshold used by `reorder_alerts`.
-- `created_at`, `updated_at`: timestamps.
-
-Constraints:
-- Primary key on `id`.
-- Unique constraint on `sku`.
-
-### `intermediaries`
-
-Stores sub-assemblies that can be stocked and consumed by finished products or
-other intermediaries.
-
-Columns:
-- `id`: surrogate primary key.
-- `sku`: unique stock keeping unit.
-- `description`: human-readable item name.
-- `current_stock`: running on-hand balance maintained by triggers.
-- `min_stock_level`: reorder threshold used by `reorder_alerts`.
-- `created_at`, `updated_at`: timestamps.
-
-Constraints:
-- Primary key on `id`.
-- Unique constraint on `sku`.
-
-### `finished_products`
-
-Stores sellable products produced from BOM-defined components.
-
-Columns:
-- `id`: surrogate primary key.
-- `sku`: unique stock keeping unit.
-- `description`: human-readable item name.
-- `client_id`: optional reference to `clients.id`.
-- `current_stock`: running on-hand balance maintained by triggers.
-- `min_stock_level`: reorder threshold used by `reorder_alerts`.
-- `created_at`, `updated_at`: timestamps.
-
-Constraints:
-- Primary key on `id`.
-- Unique constraint on `sku`.
-
-### `bom`
-
-Stores typed parent/child component relationships for multi-level production.
-
-Columns:
-- `parent_type`: one of `intermediate` or `finished`.
-- `parent_id`: identifier in the table implied by `parent_type`.
-- `child_type`: one of `raw` or `intermediate`.
-- `child_id`: identifier in the table implied by `child_type`.
-- `quantity`: required component quantity per unit of the parent.
-
-Constraints:
-- Composite primary key on
-  `parent_type, parent_id, child_type, child_id`.
-- `quantity > 0`.
-- `parent_type` restricted to `intermediate` and `finished`.
-- `child_type` restricted to `raw` and `intermediate`.
-- `bom_no_self_reference_check` blocks direct intermediary self-reference.
-- Trigger `trg_check_bom_references` validates that typed parent and child
-  rows exist.
-
-### `stock_transactions`
-
-Stores inventory movements for raw materials, intermediaries, and finished
-products.
-
-Columns:
-- `id`: surrogate primary key.
-- `product_id`: identifier in the table implied by `product_type`.
-- `product_type`: one of `raw`, `intermediate`, or `finished`.
-- `warehouse_id`: optional reference to `warehouses.id`.
-- `quantity`: positive for inbound stock, negative for consumption.
-- `transaction_date`: timestamp for the movement.
-
-Constraints and indexes:
-- Primary key on `id`.
-- `product_type` restricted to `raw`, `intermediate`, and `finished`.
-- Index on `transaction_date`.
-- Composite lookup index on `product_type, product_id`.
-- Warehouse lookup index on `warehouse_id, product_type, product_id`.
-- Trigger `trg_check_stock_before_insert` blocks missing references and
-  negative balances.
-- Trigger `trg_update_current_stock` applies the transaction to the relevant
-  stock table.
-
-### `warehouses`
-
-Stores warehouse or storage-location metadata used by stock transactions.
-
-Columns:
-- `id`: surrogate primary key.
-- `code`: unique warehouse code.
-- `warehouse_name`: human-readable warehouse name.
-- `created_at`, `updated_at`: timestamps.
-
-Constraints:
-- Primary key on `id`.
-- Unique constraint on `code`.
-
 ### `suppliers`
 
-Stores supplier master data.
+Supplier master data.
 
-Columns:
-- `id`: surrogate primary key.
-- `name`: supplier name.
-- `created_at`, `updated_at`: timestamps.
+| Column | Type | Constraints |
+|---|---|---|
+| `id` | `serial` | Primary key |
+| `name` | `text` | Not null |
+| `created_at` | `timestamptz` | Defaults to `now()` |
+| `updated_at` | `timestamptz` | Defaults to `now()` |
 
 ### `clients`
 
-Stores client master data.
+Client master data.
 
-Columns:
-- `id`: surrogate primary key.
-- `name`: client name.
-- `created_at`, `updated_at`: timestamps.
+| Column | Type | Constraints |
+|---|---|---|
+| `id` | `serial` | Primary key |
+| `name` | `text` | Not null |
+| `created_at` | `timestamptz` | Defaults to `now()` |
+| `updated_at` | `timestamptz` | Defaults to `now()` |
+
+### `warehouses`
+
+Warehouse/location metadata.
+
+| Column | Type | Constraints |
+|---|---|---|
+| `id` | `serial` | Primary key |
+| `code` | `text` | Not null, unique |
+| `warehouse_name` | `text` | Not null |
+| `created_at` | `timestamptz` | Defaults to `now()` |
+| `updated_at` | `timestamptz` | Defaults to `now()` |
+
+### `raw_materials`
+
+Purchased inputs.
+
+| Column | Type | Constraints |
+|---|---|---|
+| `id` | `serial` | Primary key |
+| `sku` | `text` | Not null, unique |
+| `description` | `text` | Not null |
+| `supplier_id` | `integer` | FK to `suppliers.id`, nullable |
+| `current_stock` | `numeric` | Not null, default 0 |
+| `min_stock_level` | `numeric` | Not null, default 0 |
+| `created_at` | `timestamptz` | Defaults to `now()` |
+| `updated_at` | `timestamptz` | Defaults to `now()` |
+
+### `intermediaries`
+
+Stocked sub-assemblies.
+
+| Column | Type | Constraints |
+|---|---|---|
+| `id` | `serial` | Primary key |
+| `sku` | `text` | Not null, unique |
+| `description` | `text` | Not null |
+| `current_stock` | `numeric` | Not null, default 0 |
+| `min_stock_level` | `numeric` | Not null, default 0 |
+| `created_at` | `timestamptz` | Defaults to `now()` |
+| `updated_at` | `timestamptz` | Defaults to `now()` |
+
+### `finished_products`
+
+Sellable products.
+
+| Column | Type | Constraints |
+|---|---|---|
+| `id` | `serial` | Primary key |
+| `sku` | `text` | Not null, unique |
+| `description` | `text` | Not null |
+| `client_id` | `integer` | FK to `clients.id`, nullable |
+| `current_stock` | `numeric` | Not null, default 0 |
+| `min_stock_level` | `numeric` | Not null, default 0 |
+| `created_at` | `timestamptz` | Defaults to `now()` |
+| `updated_at` | `timestamptz` | Defaults to `now()` |
+
+### `bom`
+
+Typed multi-level bill of materials.
+
+| Column | Type | Constraints |
+|---|---|---|
+| `parent_type` | `text` | `intermediate` or `finished` |
+| `parent_id` | `integer` | Typed reference |
+| `child_type` | `text` | `raw` or `intermediate` |
+| `child_id` | `integer` | Typed reference |
+| `quantity` | `numeric` | Must be greater than 0 |
+
+Primary key:
+
+```text
+(parent_type, parent_id, child_type, child_id)
+```
+
+Database rules:
+
+- raw materials cannot be BOM parents
+- finished products cannot be BOM children
+- direct intermediary self-reference is rejected
+- `trg_check_bom_references` validates typed parent and child references
+
+### `stock_transactions`
+
+Append-style inventory movement ledger.
+
+| Column | Type | Constraints |
+|---|---|---|
+| `id` | `serial` | Primary key |
+| `product_id` | `integer` | Typed product reference |
+| `product_type` | `text` | `raw`, `intermediate`, or `finished` |
+| `warehouse_id` | `integer` | FK to `warehouses.id`, nullable |
+| `quantity` | `numeric` | Signed stock movement |
+| `transaction_date` | `timestamptz` | Defaults to `now()` |
+
+Indexes:
+
+- `idx_stock_transactions_transaction_date`
+- `idx_stock_transactions_product_lookup`
+- `idx_stock_transactions_warehouse_lookup`
+
+The trigger layer validates the typed product reference and blocks a movement
+that would drive the global stock balance negative.
 
 ## Views
 
 ### `stock_on_hand`
 
-Normalizes current inventory across all three product tiers with a unified
-`product_type` column.
+Unified global stock state across all three item tiers.
 
-Output columns:
+Columns:
+
 - `id`
 - `sku`
 - `description`
@@ -149,9 +146,10 @@ Output columns:
 
 ### `reorder_alerts`
 
-Lists items whose `current_stock` is below `min_stock_level`.
+Items whose `current_stock` is below `min_stock_level`.
 
-Output columns:
+Columns:
+
 - `id`
 - `sku`
 - `description`
@@ -161,9 +159,10 @@ Output columns:
 
 ### `stock_on_hand_by_warehouse`
 
-Aggregates stock balances by warehouse and product.
+Ledger-derived stock balances by warehouse and typed product.
 
-Output columns:
+Columns:
+
 - `warehouse_id`
 - `warehouse_code`
 - `warehouse_name`
@@ -175,47 +174,74 @@ Output columns:
 
 ## Functions
 
-### `create_production_run(product_id, quantity)`
+### `validate_bom_reference(item_type, item_id)`
 
-Wrapper that posts a production run to the default `MAIN` warehouse when one
-exists.
+Returns whether the typed item exists in the corresponding inventory table.
 
-Behavior:
-- Delegates to `create_production_run(product_id, quantity, warehouse_id)`.
-- Uses the `MAIN` warehouse when it is present.
+### `check_bom_references()`
 
-### `create_production_run(product_id, quantity, warehouse_id)`
+Trigger function enforcing typed BOM referential integrity.
 
-Consumes the direct BOM children of a finished product and adds the requested
-finished quantity to stock in the selected warehouse context.
+### `check_stock_before_insert()`
 
-Behavior:
-- Rejects `quantity <= 0`.
-- Rejects unknown finished product IDs.
-- Rejects unknown warehouse IDs when a warehouse is supplied.
-- Rejects production runs for products without a BOM.
-- Inserts one negative `stock_transactions` row per direct BOM child.
-- Inserts one positive finished-goods `stock_transactions` row.
+Validates a stock transaction before insertion.
 
-### `transfer_stock(product_id, product_type, quantity, from_warehouse_id, to_warehouse_id)`
+It rejects:
 
-Moves stock for one typed product from one warehouse to another.
+- unknown typed product references
+- movements that would make global stock negative
 
-Behavior:
-- Rejects `quantity <= 0`.
-- Rejects unsupported product types.
-- Rejects identical source and destination warehouses.
-- Rejects unknown product or warehouse IDs.
-- Rejects transfers that would overdraw the source warehouse balance.
-- Inserts one negative source-warehouse transaction and one positive
-  destination-warehouse transaction.
+### `update_current_stock_after_insert()`
+
+Applies a transaction quantity to the relevant item table after insertion.
 
 ### `bom_explosion(parent_id)`
 
-Recursively expands the BOM of a finished product and returns the rolled-up
-component requirements across intermediary and raw-material levels.
+Recursively expands a finished-product BOM and aggregates requirements across
+all nested intermediary and raw-material levels.
 
-Output columns:
+Returns:
+
 - `child_id`
 - `child_type`
 - `quantity`
+
+### `create_production_run(product_id, quantity)`
+
+Convenience overload that uses the `MAIN` warehouse when it exists.
+
+### `create_production_run(product_id, quantity, warehouse_id)`
+
+Creates one production batch.
+
+It:
+
+- validates quantity, product, warehouse, and BOM
+- inserts negative movements for direct BOM children
+- inserts a positive finished-product movement
+- carries the selected warehouse into all generated transactions
+
+### `transfer_stock(product_id, product_type, quantity, from_warehouse_id, to_warehouse_id)`
+
+Moves stock between warehouses by writing one negative source movement and one
+positive destination movement.
+
+It validates:
+
+- positive transfer quantity
+- supported product type
+- distinct source and destination warehouses
+- product and warehouse existence
+- sufficient source-warehouse balance
+
+## Triggers
+
+| Trigger | Table | Purpose |
+|---|---|---|
+| `trg_check_stock_before_insert` | `stock_transactions` | Validate typed product reference and stock balance |
+| `trg_update_current_stock` | `stock_transactions` | Update global `current_stock` |
+| `trg_check_bom_references` | `bom` | Validate typed BOM references |
+
+## Relationship model
+
+For the full visual model, see the [ER Diagram](ERD.md).

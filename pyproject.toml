@@ -15,9 +15,11 @@ dependencies = [
 inventory-cli = "inventory.cli:main"
 
 [tool.poetry.dependencies]
+
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0"
 sqlfluff = "^2.3"
+mkdocs-material = "^9.6"
 
 [build-system]
 requires = ["poetry-core"]
