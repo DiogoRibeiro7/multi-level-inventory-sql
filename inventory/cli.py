@@ -9,7 +9,7 @@ from typing import Iterable
 
 
 def run_sql_file(conn_str: str, sql_file: str) -> None:
-    """Execute a SQL file using ``psql``.
+    """Execute a SQL file using ``psql`` and fail on the first SQL error.
 
     Args:
         conn_str: Database connection string understood by ``psql``.
@@ -22,9 +22,18 @@ def run_sql_file(conn_str: str, sql_file: str) -> None:
     if shutil.which("psql") is None:
         raise RuntimeError("psql executable not found in PATH")
 
+    command = [
+        "psql",
+        conn_str,
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-f",
+        sql_file,
+    ]
+
     try:
-        subprocess.run(["psql", conn_str, "-f", sql_file], check=True)
-    except subprocess.CalledProcessError as exc:  # pragma: no cover - defensive
+        subprocess.run(command, check=True)
+    except subprocess.CalledProcessError as exc:
         msg = f"Failed to execute {sql_file}: {exc}"
         raise RuntimeError(msg) from exc
 
