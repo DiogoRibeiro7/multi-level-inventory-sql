@@ -48,15 +48,45 @@ SELECT is(
   'Warehouse-level totals reconcile to the global stock balance'
 );
 
+-- Stage the direct BOM components in AUX before producing there.
+SELECT transfer_stock(
+  (SELECT id FROM intermediaries WHERE sku = 'FRAME001'),
+  'intermediate',
+  1,
+  (SELECT id FROM warehouses WHERE code = 'MAIN'),
+  (SELECT id FROM warehouses WHERE code = 'AUX')
+);
+SELECT transfer_stock(
+  (SELECT id FROM intermediaries WHERE sku = 'WHEEL001'),
+  'intermediate',
+  2,
+  (SELECT id FROM warehouses WHERE code = 'MAIN'),
+  (SELECT id FROM warehouses WHERE code = 'AUX')
+);
+SELECT transfer_stock(
+  (SELECT id FROM intermediaries WHERE sku = 'SEAT001'),
+  'intermediate',
+  1,
+  (SELECT id FROM warehouses WHERE code = 'MAIN'),
+  (SELECT id FROM warehouses WHERE code = 'AUX')
+);
+SELECT transfer_stock(
+  (SELECT id FROM intermediaries WHERE sku = 'HANDLE001'),
+  'intermediate',
+  1,
+  (SELECT id FROM warehouses WHERE code = 'MAIN'),
+  (SELECT id FROM warehouses WHERE code = 'AUX')
+);
+
 SELECT lives_ok(
-  $$
+  $
     SELECT create_production_run(
       (SELECT id FROM finished_products WHERE sku = 'BIKE001'),
       1::numeric,
       (SELECT id FROM warehouses WHERE code = 'AUX')
     );
-  $$,
-  'Warehouse-aware production can target the AUX warehouse'
+  $,
+  'Warehouse-aware production can target AUX when components are available'
 );
 
 SELECT finish();
