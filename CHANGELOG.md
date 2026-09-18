@@ -19,6 +19,9 @@ Target release: `0.4.0`
 - Explicit `transfer_stock(...)` support for warehouse-to-warehouse moves
 
 ### Changed
+- Stock validation now locks the referenced inventory row before checking balances, serializing concurrent movements for the same product
+- Warehouse withdrawals are validated at the stock-transaction trigger boundary
+- Production runs consume BOM components in deterministic order to reduce deadlock risk
 - Backup and restore scripts now validate prerequisites, fail fast on errors,
   and document safer operational usage
 - Project metadata and documentation now target the upcoming `0.4.0` release
