@@ -1,5 +1,6 @@
 site_name: Multi-Level Inventory SQL
 site_description: Production-oriented PostgreSQL inventory system documentation
+site_url: https://diogoribeiro7.github.io/multi-level-inventory-sql/
 repo_name: DiogoRibeiro7/multi-level-inventory-sql
 repo_url: https://github.com/DiogoRibeiro7/multi-level-inventory-sql
 strict: true
