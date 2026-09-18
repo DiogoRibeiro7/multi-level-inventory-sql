@@ -127,8 +127,7 @@ Indexes:
 - `idx_stock_transactions_product_lookup`
 - `idx_stock_transactions_warehouse_lookup`
 
-The trigger layer validates the typed product reference and blocks a movement
-that would drive the global stock balance negative.
+The trigger layer validates the typed product reference, serializes stock checks by locking the referenced inventory row, blocks a movement that would drive the global stock balance negative, and rejects warehouse withdrawals that exceed the selected warehouse balance.
 
 ## Views
 
@@ -186,10 +185,14 @@ Trigger function enforcing typed BOM referential integrity.
 
 Validates a stock transaction before insertion.
 
+It locks the referenced inventory row with `FOR UPDATE` before validating balances. This serializes concurrent stock checks for the same product.
+
 It rejects:
 
+- unsupported product types
 - unknown typed product references
 - movements that would make global stock negative
+- negative warehouse movements that exceed the warehouse-specific balance
 
 ### `update_current_stock_after_insert()`
 
@@ -220,6 +223,7 @@ It:
 - inserts negative movements for direct BOM children
 - inserts a positive finished-product movement
 - carries the selected warehouse into all generated transactions
+- consumes BOM children in deterministic `child_type, child_id` order to reduce lock-order deadlock risk
 
 ### `transfer_stock(product_id, product_type, quantity, from_warehouse_id, to_warehouse_id)`
 
