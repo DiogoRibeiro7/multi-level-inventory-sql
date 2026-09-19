@@ -1,3 +1,4 @@
+from hashlib import sha256
 from pathlib import Path
 import subprocess
 import sys
@@ -20,6 +21,7 @@ def test_run_sql_file_invokes_psql() -> None:
             [
                 "psql",
                 "db",
+                "-X",
                 "-v",
                 "ON_ERROR_STOP=1",
                 "-f",
@@ -32,7 +34,7 @@ def test_run_sql_file_invokes_psql() -> None:
 def test_run_sql_file_raises_on_psql_failure() -> None:
     failure = subprocess.CalledProcessError(
         returncode=3,
-        cmd=["psql", "db", "-v", "ON_ERROR_STOP=1", "-f", "file.sql"],
+        cmd=["psql", "db", "-X", "-v", "ON_ERROR_STOP=1", "-f", "file.sql"],
     )
 
     with mock.patch("shutil.which", return_value="psql"), mock.patch(
@@ -41,16 +43,91 @@ def test_run_sql_file_raises_on_psql_failure() -> None:
         cli.run_sql_file("db", "file.sql")
 
 
-def test_run_migrations_order(tmp_path: Path) -> None:
-    (tmp_path / "002.sql").write_text("")
-    (tmp_path / "001.sql").write_text("")
-    (tmp_path / "003.sql").write_text("")
-    with mock.patch("inventory.cli.run_sql_file") as run_sql:
+def test_run_migrations_applies_pending_scripts_in_order(tmp_path: Path) -> None:
+    (tmp_path / "002.sql").write_text("SELECT 2;")
+    (tmp_path / "001.sql").write_text("SELECT 1;")
+    (tmp_path / "003.sql").write_text("SELECT 3;")
+
+    with (
+        mock.patch("inventory.cli._ensure_history_table"),
+        mock.patch("inventory.cli._load_script_history", return_value={}),
+        mock.patch("inventory.cli.run_sql_file") as run_sql,
+        mock.patch("inventory.cli._record_script") as record,
+    ):
         cli.run_migrations("db", str(tmp_path))
-        assert run_sql.call_count == 3
-        assert run_sql.call_args_list[0].args[1].endswith("001.sql")
-        assert run_sql.call_args_list[1].args[1].endswith("002.sql")
-        assert run_sql.call_args_list[2].args[1].endswith("003.sql")
+
+    assert [Path(call.args[1]).name for call in run_sql.call_args_list] == [
+        "001.sql",
+        "002.sql",
+        "003.sql",
+    ]
+    assert [call.args[2] for call in record.call_args_list] == [
+        "001.sql",
+        "002.sql",
+        "003.sql",
+    ]
+
+
+def test_run_migrations_skips_applied_script(tmp_path: Path) -> None:
+    script = tmp_path / "001.sql"
+    script.write_text("SELECT 1;")
+    checksum = sha256(script.read_bytes()).hexdigest()
+
+    with (
+        mock.patch("inventory.cli._ensure_history_table"),
+        mock.patch(
+            "inventory.cli._load_script_history",
+            return_value={"001.sql": checksum},
+        ),
+        mock.patch("inventory.cli.run_sql_file") as run_sql,
+        mock.patch("inventory.cli._record_script") as record,
+    ):
+        cli.run_migrations("db", str(tmp_path))
+
+    run_sql.assert_not_called()
+    record.assert_not_called()
+
+
+def test_run_migrations_rejects_checksum_drift(tmp_path: Path) -> None:
+    script = tmp_path / "001.sql"
+    script.write_text("SELECT 1;")
+
+    with (
+        mock.patch("inventory.cli._ensure_history_table"),
+        mock.patch(
+            "inventory.cli._load_script_history",
+            return_value={"001.sql": "old-checksum"},
+        ),
+        pytest.raises(RuntimeError, match="checksum mismatch"),
+    ):
+        cli.run_migrations("db", str(tmp_path))
+
+
+def test_baseline_records_scripts_without_executing(tmp_path: Path) -> None:
+    migration_dir = tmp_path / "migrations"
+    seed_dir = tmp_path / "seeds"
+    migration_dir.mkdir()
+    seed_dir.mkdir()
+    (migration_dir / "001.sql").write_text("SELECT 1;")
+    (seed_dir / "001.sql").write_text("SELECT 2;")
+
+    with (
+        mock.patch("inventory.cli._ensure_history_table"),
+        mock.patch("inventory.cli._load_script_history", return_value={}),
+        mock.patch("inventory.cli._record_script") as record,
+        mock.patch("inventory.cli.run_sql_file") as run_sql,
+    ):
+        cli.baseline_database(
+            "db",
+            str(migration_dir),
+            str(seed_dir),
+        )
+
+    run_sql.assert_not_called()
+    assert [call.args[1] for call in record.call_args_list] == [
+        "migration",
+        "seed",
+    ]
 
 
 def test_main_runs_all_by_default() -> None:
@@ -78,3 +155,9 @@ def test_main_seed_only() -> None:
         cli.main(["db", "seed", "--to", "002.sql"])
         seed.assert_called_once_with("db", to="002.sql")
         mig.assert_not_called()
+
+
+def test_main_baseline() -> None:
+    with mock.patch("inventory.cli.baseline_database") as baseline:
+        cli.main(["db", "baseline"])
+        baseline.assert_called_once_with("db")
