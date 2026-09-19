@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from hashlib import sha256
 from pathlib import Path
 import shutil
@@ -9,6 +10,19 @@ import subprocess
 from typing import Iterable, Literal, Mapping, TypeAlias
 
 ScriptKind: TypeAlias = Literal["migration", "seed"]
+StatusKind: TypeAlias = Literal["applied", "pending", "drifted", "missing"]
+
+
+@dataclass(frozen=True, slots=True)
+class ScriptState:
+    """Status of one tracked migration or seed script."""
+
+    script_kind: ScriptKind
+    script_name: str
+    status: StatusKind
+    recorded_checksum: str | None = None
+    current_checksum: str | None = None
+
 
 _HISTORY_TABLE = "inventory_script_history"
 _VALID_SCRIPT_KINDS: frozenset[str] = frozenset({"migration", "seed"})
@@ -205,6 +219,116 @@ def _script_paths(directory: str, to: str | None = None) -> list[Path]:
     return paths
 
 
+def _collect_script_status(
+    conn_str: str,
+    directory: str,
+    script_kind: ScriptKind,
+) -> list[ScriptState]:
+    """Compare repository scripts with the database migration ledger.
+
+    Args:
+        conn_str: Connection string for the target database.
+        directory: Directory containing SQL scripts.
+        script_kind: Whether the scripts are migrations or seeds.
+
+    Returns:
+        One status record per repository script plus ledger entries whose
+        corresponding local file is missing.
+    """
+
+    _ensure_history_table(conn_str)
+    history = _load_script_history(conn_str, script_kind)
+
+    local_checksums = {
+        path.name: _script_checksum(path)
+        for path in _script_paths(directory)
+    }
+
+    states: list[ScriptState] = []
+    for script_name in sorted(local_checksums):
+        current_checksum = local_checksums[script_name]
+        recorded_checksum = history.get(script_name)
+
+        if recorded_checksum is None:
+            status: StatusKind = "pending"
+        elif recorded_checksum == current_checksum:
+            status = "applied"
+        else:
+            status = "drifted"
+
+        states.append(
+            ScriptState(
+                script_kind=script_kind,
+                script_name=script_name,
+                status=status,
+                recorded_checksum=recorded_checksum,
+                current_checksum=current_checksum,
+            )
+        )
+
+    for script_name in sorted(set(history) - set(local_checksums)):
+        states.append(
+            ScriptState(
+                script_kind=script_kind,
+                script_name=script_name,
+                status="missing",
+                recorded_checksum=history[script_name],
+                current_checksum=None,
+            )
+        )
+
+    return states
+
+
+def status_database(
+    conn_str: str,
+    migration_directory: str = "db/migrations",
+    seed_directory: str = "db/seeds",
+) -> bool:
+    """Print migration/seed status and return whether history is consistent.
+
+    Pending scripts are valid. Checksum drift and ledger entries whose local
+    file is missing are consistency errors.
+
+    Args:
+        conn_str: Connection string for the target database.
+        migration_directory: Directory containing migration scripts.
+        seed_directory: Directory containing seed scripts.
+
+    Returns:
+        True when no drifted or missing scripts are found.
+    """
+
+    groups = (
+        (
+            "MIGRATIONS",
+            _collect_script_status(
+                conn_str,
+                migration_directory,
+                "migration",
+            ),
+        ),
+        (
+            "SEEDS",
+            _collect_script_status(
+                conn_str,
+                seed_directory,
+                "seed",
+            ),
+        ),
+    )
+
+    is_consistent = True
+    for title, states in groups:
+        print(title)
+        for state in states:
+            print(f"{state.status.upper():<8} {state.script_name}")
+            if state.status in {"drifted", "missing"}:
+                is_consistent = False
+
+    return is_consistent
+
+
 def _run_tracked_scripts(
     conn_str: str,
     directory: str,
@@ -335,6 +459,10 @@ def main(args: Iterable[str] | None = None) -> None:
         "baseline",
         help="Record existing migrations and seeds without executing them",
     )
+    sub.add_parser(
+        "status",
+        help="Show applied, pending, and drifted migrations and seeds",
+    )
 
     parsed = parser.parse_args(list(args) if args is not None else None)
 
@@ -345,6 +473,9 @@ def main(args: Iterable[str] | None = None) -> None:
         run_seeds(parsed.conn, to=getattr(parsed, "to", None))
     elif cmd == "baseline":
         baseline_database(parsed.conn)
+    elif cmd == "status":
+        if not status_database(parsed.conn):
+            raise SystemExit(1)
     else:
         run_migrations(parsed.conn)
         run_seeds(parsed.conn)
