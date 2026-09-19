@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 Target release: `0.4.0`
 
 ### Added
+- `status` CLI command reporting applied, pending, drifted, and missing migration/seed files with non-zero exit on history inconsistencies
 - pgTAP schema contract coverage for core tables, views, functions, triggers, indexes, and the migration ledger
 - CI verification that a second migration/seed pass is a no-op and that history counts match the repository
 - Migration and seed history tracking with SHA-256 checksums
