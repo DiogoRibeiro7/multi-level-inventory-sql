@@ -42,6 +42,14 @@ jobs:
       - name: Run migrations and seeds
         run: poetry run inventory-cli postgresql://postgres:postgres@localhost:5432/postgres
 
+      - name: Verify migration replay is a no-op
+        run: poetry run inventory-cli postgresql://postgres:postgres@localhost:5432/postgres
+
+      - name: Verify migration history
+        run: |
+          test "$(psql postgresql://postgres:postgres@localhost:5432/postgres -Atc "SELECT COUNT(*) FROM inventory_script_history WHERE script_type = 'migration';")" -eq 14
+          test "$(psql postgresql://postgres:postgres@localhost:5432/postgres -Atc "SELECT COUNT(*) FROM inventory_script_history WHERE script_type = 'seed';")" -eq 9
+
       - name: Install pgTAP extension
         run: psql postgresql://postgres:postgres@localhost:5432/postgres -c 'CREATE EXTENSION IF NOT EXISTS pgtap;'
 
