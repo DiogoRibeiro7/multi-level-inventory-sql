@@ -202,3 +202,76 @@ def test_main_baseline() -> None:
     with mock.patch("inventory.cli.baseline_database") as baseline:
         cli.main(["db", "baseline"])
         baseline.assert_called_once_with("db")
+
+
+
+def test_collect_script_status_classifies_repository_scripts(
+    tmp_path: Path,
+) -> None:
+    applied = tmp_path / "001.sql"
+    pending = tmp_path / "002.sql"
+    drifted = tmp_path / "003.sql"
+
+    applied.write_text("SELECT 1;")
+    pending.write_text("SELECT 2;")
+    drifted.write_text("SELECT 3;")
+
+    applied_checksum = sha256(applied.read_bytes()).hexdigest()
+
+    with (
+        mock.patch("inventory.cli._ensure_history_table"),
+        mock.patch(
+            "inventory.cli._load_script_history",
+            return_value={
+                "001.sql": applied_checksum,
+                "003.sql": "old-checksum",
+                "000_removed.sql": "historic-checksum",
+            },
+        ),
+    ):
+        states = cli._collect_script_status(
+            "db",
+            str(tmp_path),
+            "migration",
+        )
+
+    assert [(state.script_name, state.status) for state in states] == [
+        ("001.sql", "applied"),
+        ("002.sql", "pending"),
+        ("003.sql", "drifted"),
+        ("000_removed.sql", "missing"),
+    ]
+
+
+def test_status_database_reports_drift_and_returns_false(
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    migration_states = [
+        cli.ScriptState("migration", "001.sql", "applied"),
+        cli.ScriptState("migration", "002.sql", "pending"),
+    ]
+    seed_states = [
+        cli.ScriptState("seed", "001.sql", "drifted"),
+    ]
+
+    with mock.patch(
+        "inventory.cli._collect_script_status",
+        side_effect=[migration_states, seed_states],
+    ):
+        is_consistent = cli.status_database("db")
+
+    captured = capsys.readouterr()
+    assert "APPLIED  001.sql" in captured.out
+    assert "PENDING  002.sql" in captured.out
+    assert "DRIFTED  001.sql" in captured.out
+    assert is_consistent is False
+
+
+def test_main_status_exits_nonzero_on_drift() -> None:
+    with mock.patch(
+        "inventory.cli.status_database",
+        return_value=False,
+    ), pytest.raises(SystemExit) as exc:
+        cli.main(["db", "status"])
+
+    assert exc.value.code == 1
