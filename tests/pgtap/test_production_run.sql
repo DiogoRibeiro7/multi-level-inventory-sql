@@ -62,39 +62,72 @@ SELECT is(
 );
 
 SELECT throws_ok(
-  $$
+  $test$
     SELECT create_production_run(
       (SELECT id FROM finished_products WHERE sku = 'BIKE001'),
       0::numeric
     );
-  $$,
+  $test$,
   'P0001',
   'Production quantity must be greater than zero',
   'Rejects zero-quantity production runs'
 );
 
 SELECT throws_ok(
-  $$
+  $test$
     SELECT create_production_run(
       (SELECT id FROM finished_products WHERE sku = 'BIKE001'),
       1::numeric,
       999999
     );
-  $$,
+  $test$,
   'P0001',
   'Unknown warehouse 999999',
   'Rejects unknown warehouse IDs'
 );
 
+-- Move one production batch of components into AUX before producing there.
+SELECT transfer_stock(
+  (SELECT id FROM intermediaries WHERE sku = 'FRAME001'),
+  'intermediate',
+  1,
+  (SELECT id FROM warehouses WHERE code = 'MAIN'),
+  (SELECT id FROM warehouses WHERE code = 'AUX')
+);
+
+SELECT transfer_stock(
+  (SELECT id FROM intermediaries WHERE sku = 'WHEEL001'),
+  'intermediate',
+  2,
+  (SELECT id FROM warehouses WHERE code = 'MAIN'),
+  (SELECT id FROM warehouses WHERE code = 'AUX')
+);
+
+SELECT transfer_stock(
+  (SELECT id FROM intermediaries WHERE sku = 'SEAT001'),
+  'intermediate',
+  1,
+  (SELECT id FROM warehouses WHERE code = 'MAIN'),
+  (SELECT id FROM warehouses WHERE code = 'AUX')
+);
+
+SELECT transfer_stock(
+  (SELECT id FROM intermediaries WHERE sku = 'HANDLE001'),
+  'intermediate',
+  1,
+  (SELECT id FROM warehouses WHERE code = 'MAIN'),
+  (SELECT id FROM warehouses WHERE code = 'AUX')
+);
+
 SELECT lives_ok(
-  $$
+  $test$
     SELECT create_production_run(
       (SELECT id FROM finished_products WHERE sku = 'BIKE001'),
       1::numeric,
       (SELECT id FROM warehouses WHERE code = 'AUX')
     );
-  $$,
-  'Warehouse-aware production run succeeds for a valid warehouse'
+  $test$,
+  'Warehouse-aware production succeeds when AUX has the required components'
 );
 
 SELECT finish();
