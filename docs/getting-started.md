@@ -17,11 +17,13 @@ poetry install
 
 ## Apply migrations and seed data
 
-Run all migrations and seeds:
+Run all pending migrations and seeds:
 
 ```bash
 poetry run inventory-cli postgresql://user:pass@localhost/dbname
 ```
+
+Applied scripts are stored in `inventory_script_history` with their SHA-256 checksums. Re-running the command skips scripts that have already been applied. If an applied file changes later, the CLI stops with a checksum mismatch.
 
 Run only migrations:
 
@@ -35,6 +37,16 @@ Run migrations up to a specific file:
 poetry run inventory-cli postgresql://user:pass@localhost/dbname migrate \
   --to 009_enable_multi_level_bom.sql
 ```
+
+## Existing databases
+
+If the database was initialized before migration tracking existed, baseline it once:
+
+```bash
+poetry run inventory-cli postgresql://user:pass@localhost/dbname baseline
+```
+
+This records all current migration and seed files without executing them. Baseline only a database whose schema and seed state already matches the repository.
 
 ## Run the test suite
 
