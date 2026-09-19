@@ -48,6 +48,20 @@ poetry run inventory-cli postgresql://user:pass@localhost/dbname baseline
 
 This records all current migration and seed files without executing them. Baseline only a database whose schema and seed state already matches the repository.
 
+## Migration status
+
+Inspect the database against the repository without applying anything:
+
+```bash
+poetry run inventory-cli postgresql://user:pass@localhost/dbname status
+```
+
+The command reports each migration and seed as `APPLIED`, `PENDING`,
+`DRIFTED`, or `MISSING`. Pending scripts are normal before deployment.
+Checksum drift or a history entry whose file has disappeared from the
+repository causes a non-zero exit code, making `status` suitable for deployment
+preflight checks.
+
 ## Run the test suite
 
 Python tests:
