@@ -22,7 +22,15 @@ See [ROADMAP.md](ROADMAP.md) for the technical roadmap and
    poetry run inventory-cli postgres://user:pass@localhost/dbname
    ```
 
-The CLI executes every SQL file in `db/migrations` and `db/seeds` in order.
+The CLI records applied migrations and seeds in `inventory_script_history`, skips scripts that already ran, and verifies SHA-256 checksums before continuing.
+
+For an existing database created before migration tracking was introduced, run:
+
+```bash
+poetry run inventory-cli postgres://user:pass@localhost/dbname baseline
+```
+
+`baseline` records the current migration and seed files without executing them. Use it only after confirming the target database already contains that schema/data state.
 
 ## Documentation
 
