@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 Target release: `0.4.0`
 
 ### Added
+- Migration and seed history tracking with SHA-256 checksums
+- `baseline` CLI command for adopting tracking on existing databases without replaying historical scripts
 - Typed BOM relationships so finished products and intermediaries can reference lower-level components
 - Recursive `bom_explosion` output across intermediary and raw-material levels
 - Reporting indexes for stock transaction date and product lookups
@@ -19,6 +21,8 @@ Target release: `0.4.0`
 - Explicit `transfer_stock(...)` support for warehouse-to-warehouse moves
 
 ### Changed
+- The CLI now skips already-applied migrations and seeds and rejects checksum drift in previously applied SQL files
+- SQL execution ignores user `.psqlrc` configuration via `psql -X` for deterministic automation
 - Stock validation now locks the referenced inventory row before checking balances, serializing concurrent movements for the same product
 - Warehouse withdrawals are validated at the stock-transaction trigger boundary
 - Production runs consume BOM components in deterministic order to reduce deadlock risk
