@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 Target release: `0.4.0`
 
 ### Added
+- pgTAP schema contract coverage for core tables, views, functions, triggers, indexes, and the migration ledger
+- CI verification that a second migration/seed pass is a no-op and that history counts match the repository
 - Migration and seed history tracking with SHA-256 checksums
 - `baseline` CLI command for adopting tracking on existing databases without replaying historical scripts
 - Typed BOM relationships so finished products and intermediaries can reference lower-level components
