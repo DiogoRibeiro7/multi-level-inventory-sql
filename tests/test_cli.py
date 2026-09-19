@@ -43,6 +43,47 @@ def test_run_sql_file_raises_on_psql_failure() -> None:
         cli.run_sql_file("db", "file.sql")
 
 
+def test_run_psql_uses_stdin_for_variable_expansion() -> None:
+    completed = subprocess.CompletedProcess(
+        args=[],
+        returncode=0,
+        stdout="001.sql\tchecksum\n",
+        stderr="",
+    )
+
+    with mock.patch("shutil.which", return_value="psql"), mock.patch(
+        "subprocess.run",
+        return_value=completed,
+    ) as run:
+        output = cli._run_psql(
+            "db",
+            "SELECT :'script_type';",
+            variables={"script_type": "migration"},
+        )
+
+    run.assert_called_once_with(
+        [
+            "psql",
+            "db",
+            "-X",
+            "-q",
+            "-t",
+            "-A",
+            "-v",
+            "ON_ERROR_STOP=1",
+            "-v",
+            "script_type=migration",
+            "-f",
+            "-",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+        input="SELECT :'script_type';",
+    )
+    assert output == "001.sql\tchecksum"
+
+
 def test_run_migrations_applies_pending_scripts_in_order(tmp_path: Path) -> None:
     (tmp_path / "002.sql").write_text("SELECT 2;")
     (tmp_path / "001.sql").write_text("SELECT 1;")
