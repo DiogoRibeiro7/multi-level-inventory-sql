@@ -57,7 +57,7 @@ def _run_psql(
     for name, value in (variables or {}).items():
         command.extend(["-v", f"{name}={value}"])
 
-    command.extend(["-c", sql])
+    command.extend(["-f", "-"])
 
     try:
         result = subprocess.run(
@@ -65,6 +65,7 @@ def _run_psql(
             check=True,
             capture_output=True,
             text=True,
+            input=sql,
         )
     except subprocess.CalledProcessError as exc:
         msg = f"Failed to execute PostgreSQL command: {exc}"
